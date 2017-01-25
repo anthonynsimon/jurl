@@ -1,103 +1,232 @@
 package com.anthonynsimon.url;
 
+enum EncodeZone {
+    CREDENTIALS,
+    HOST,
+    PATH,
+    QUERY,
+    FRAGMENT,
+}
+
 public class URL {
+    private static final char[] reservedChars = {'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'};
+    private static final char[] hostAllowedChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
+    private static final char[] unreservedChars = {'-', '_', '.', '~'};
+
     private String protocol;
     private String username;
     private String password;
     private String host;
-    private Integer port;
     private String path;
     private String query;
     private String fragment;
     private String stringRepr;
 
-    // TODO: switch to parse method and builder pattern for constructor or setters
     public URL(String rawUrl) throws MalformedURLException {
-        // TODO: escape rawUrl first!
         parse(rawUrl);
     }
 
-    public String normalized() {
-        // TODO: implement this
-        return null;
+    private boolean shouldEscape(char c, EncodeZone zone) {
+        if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
+            return false;
+        }
+
+        if (zone == EncodeZone.HOST || zone == EncodeZone.PATH) {
+            if (c == '%') {
+                return true;
+            }
+            for (char reserved : hostAllowedChars) {
+                if (reserved == c) {
+                    return false;
+                }
+            }
+        }
+
+        for (char unreserved : unreservedChars) {
+            if (unreserved == c) {
+                return false;
+            }
+        }
+
+        for (char reserved : new char[]{'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'}) {
+            if (reserved == c) {
+                switch (zone) {
+                    case PATH:
+                        return c == '?';
+                    case CREDENTIALS:
+                        return c == '@' || c == '/' || c == '?' || c == ':';
+                    case QUERY:
+                        return true;
+                    case FRAGMENT:
+                        return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private String escape(String str, EncodeZone zone) {
+        char[] chars = str.toCharArray();
+        String result = "";
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (shouldEscape(c, zone)) {
+                result += "%" + Integer.toHexString(c);
+            } else {
+                result += c;
+            }
+        }
+        return result;
+    }
+
+    private String unescape(String str, EncodeZone zone) {
+        char[] chars = str.toCharArray();
+        String result = "";
+        for (int i = 0; i < chars.length; ) {
+            char c = chars[i];
+            if (c == '%' && i + 2 < chars.length) {
+                String hex = "" + chars[i + 1] + chars[i + 2];
+                if (zone == EncodeZone.HOST && hex == "25") {
+                    continue;
+                }
+                int val = Integer.parseInt(hex, 16);
+                result += (char) val;
+                i += 3;
+            } else {
+                result += c;
+                i++;
+            }
+        }
+        return result;
     }
 
     private void parse(String rawUrl) throws MalformedURLException {
-        int cursor = 0;
+        if (rawUrl == null) {
+            throw new MalformedURLException("url is empty");
+        }
+
         String remaining = rawUrl;
 
-        // Find the protocol
-        cursor = remaining.indexOf("://");
-        if (cursor > 0) {
-            protocol = remaining.substring(0, cursor);
-            remaining = remaining.substring(cursor + 3, remaining.length());
+        int index = remaining.lastIndexOf("#");
+        if (index > 0) {
+            String frag = remaining.substring(index + 1, remaining.length());
+            fragment = frag.isEmpty() ? null : frag;
+            remaining = remaining.substring(0, index);
         }
 
-        // Find the username and password
-        cursor = remaining.indexOf("@");
-        if (cursor > 0) {
-            String credentials = remaining.substring(0, cursor);
-            String[] parts = credentials.split(":");
-            if (parts.length > 2) {
-                throw new MalformedURLException("invalid credentials string");
-            } else if (parts.length == 2) {
-                password = parts[1];
+        if (remaining.isEmpty()) {
+            throw new MalformedURLException("invalid url");
+        }
+
+        if (remaining.equals("*")) {
+            path = "*";
+            return;
+        }
+
+        index = remaining.indexOf("?");
+        if (index > 0) {
+            query = remaining.substring(index + 1, remaining.length());
+            remaining = remaining.substring(0, index);
+        }
+
+        remaining = parseProtocol(remaining);
+
+        if (remaining.startsWith("//")) {
+            remaining = remaining.substring(2, remaining.length());
+        }
+
+        index = remaining.indexOf("/");
+        if (index > 0) {
+            path = unescape(remaining.substring(index, remaining.length()), EncodeZone.PATH);
+            remaining = remaining.substring(0, index);
+        }
+
+        parseAuthority(remaining);
+    }
+
+    private String parseProtocol(String remaining) throws MalformedURLException {
+        for (int i = 0; i < remaining.length(); i++) {
+            char c = remaining.charAt(i);
+            if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
+                continue;
+            } else if (c == ':') {
+                if (i == 0) {
+                    throw new MalformedURLException("missing protocol");
+                }
+                protocol = remaining.substring(0, i).toLowerCase();
+                remaining = remaining.substring(i + 1, remaining.length());
+                return remaining;
+            } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
+                if (i == 0) {
+                    throw new MalformedURLException("bad protocol format");
+                }
             }
-            username = parts[0];
-            remaining = remaining.substring(cursor + 1, remaining.length());
         }
+        return remaining;
+    }
 
-        // Find the fragment
-        // TODO: handle query after fragment (bad order case)
-        cursor = remaining.indexOf("#");
-        if (cursor > 0) {
-            String fragmentPart = remaining.substring(cursor + 1, remaining.length());
-            if (!fragmentPart.isEmpty()) {
-                fragment = fragmentPart;
+    private void parseAuthority(String authority) throws MalformedURLException {
+        int i = authority.lastIndexOf('@');
+        if (i >= 0) {
+            String credentials = authority.substring(0, i);
+            if (credentials.contains(":")) {
+                String[] parts = credentials.split(":", 2);
+                username = unescape(parts[0], EncodeZone.CREDENTIALS);
+                password = unescape(parts[1], EncodeZone.CREDENTIALS);
+            } else {
+                username = unescape(credentials, EncodeZone.CREDENTIALS);
             }
-            remaining = remaining.substring(0, cursor);
+            authority = authority.substring(i + 1, authority.length());
         }
+        parseHost(authority);
+    }
 
-        // Find the query string
-        cursor = remaining.indexOf("?");
-        if (cursor > 0) {
-            String queryPart = remaining.substring(cursor + 1, remaining.length());
-            if (!queryPart.isEmpty()) {
-                query = queryPart;
+    private void parseHost(String str) throws MalformedURLException {
+        if (str.startsWith("[")) {
+            int i = str.lastIndexOf("]");
+            if (i < 0) {
+                throw new MalformedURLException("IPv6 detected, but missing closing ']' token");
             }
-            remaining = remaining.substring(0, cursor);
-        }
-
-        // Find the path
-        cursor = remaining.indexOf("/");
-        if (cursor > 0) {
-            path = remaining.substring(cursor, remaining.length());
-            remaining = remaining.substring(0, cursor);
+            String portPart = str.substring(i + 1, str.length());
+            if (!validOptionalPort(portPart)) {
+                throw new MalformedURLException("invalid port");
+            }
         } else {
-            path = "/";
-        }
-
-        // Find the host and port
-        String[] parts = remaining.split(":");
-        if (parts.length > 2) {
-            throw new MalformedURLException("malformed url: " + rawUrl);
-        }
-        String hostPart = parts[0];
-        if (hostPart == null || hostPart == "" || hostPart.split(".", -1).length < 2) {
-            throw new MalformedURLException("invalid host: " + hostPart);
-
-        }
-        host = hostPart.toLowerCase();
-        if (parts.length == 2) {
-            try {
-                Integer portPart = Integer.valueOf(parts[1]);
-                port = portPart;
-            } catch (NumberFormatException e) {
-                throw new MalformedURLException("invalid port: " + parts[1]);
+            String[] parts = str.split(":", -1);
+            if (parts.length > 2) {
+                throw new MalformedURLException("invalid host");
+            }
+            String hostPart = parts[0];
+            if (hostPart == null || hostPart == "" || hostPart.split(".", -1).length < 2) {
+                throw new MalformedURLException("invalid host");
+            }
+            if (parts.length == 2) {
+                try {
+                    Integer.valueOf(parts[1]);
+                } catch (NumberFormatException e) {
+                    throw new MalformedURLException("invalid port");
+                }
             }
         }
+        host = unescape(str.toLowerCase(), EncodeZone.HOST);
+    }
 
-
+    private boolean validOptionalPort(String portStr) {
+        if (portStr == null || portStr.isEmpty()) {
+            return true;
+        }
+        int i = portStr.indexOf(":");
+        if (i < 0) {
+            return false;
+        }
+        portStr = portStr.substring(i + 1, portStr.length());
+        try {
+            Integer.valueOf(portStr);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     public String protocol() {
@@ -116,9 +245,6 @@ public class URL {
         return host;
     }
 
-    public Integer port() {
-        return port;
-    }
 
     public String path() {
         return path;
@@ -149,18 +275,23 @@ public class URL {
         if (stringRepr != null) {
             return stringRepr;
         }
-        String result = protocol + "://";
+        String result = "";
+        if (protocol != null && !protocol.isEmpty()) {
+            result += protocol + "://";
+        }
         if (username != null) {
-            result += username;
+            result += escape(username, EncodeZone.CREDENTIALS);
             if (password != null) {
-                result += ":" + password;
+                result += ":" + escape(password, EncodeZone.CREDENTIALS);
             }
+            result += "@";
         }
-        result += host;
-        if (port != null) {
-            result += ":" + port.toString();
+        if (host != null) {
+            result += escape(host, EncodeZone.HOST);
         }
-        result += path;
+        if (path != null) {
+            result += escape(path, EncodeZone.PATH);
+        }
         if (query != null) {
             result += "?" + query;
         }
