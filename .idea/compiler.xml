@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="url_main" target="1.5" />
-      <module name="url_test" target="1.5" />
+      <module name="url_main" target="1.8" />
+      <module name="url_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
