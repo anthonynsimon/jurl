@@ -11,6 +11,7 @@ public class URL {
     private String fragment;
     private String stringRepr;
 
+    // TODO: switch to parse method and builder pattern for constructor or setters
     public URL(String rawUrl) throws MalformedURLException {
         // TODO: escape rawUrl first!
         parse(rawUrl);
