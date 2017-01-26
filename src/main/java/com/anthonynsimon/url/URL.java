@@ -1,16 +1,16 @@
 package com.anthonynsimon.url;
 
-enum EncodeZone {
-    CREDENTIALS,
-    HOST,
-    PATH,
-    QUERY,
-    FRAGMENT,
-}
-
 public class URL {
+    protected enum EncodeZone {
+        CREDENTIALS,
+        HOST,
+        PATH,
+        QUERY,
+        FRAGMENT,
+    }
+
     private static final char[] reservedChars = {'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'};
-    private static final char[] hostAllowedChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
+    private static final char[] subDelimsChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
     private static final char[] unreservedChars = {'-', '_', '.', '~'};
 
     private String protocol;
@@ -20,7 +20,7 @@ public class URL {
     private String path;
     private String query;
     private String fragment;
-    private String stringRepr;
+    private String opaque;
 
     public URL(String rawUrl) throws MalformedURLException {
         parse(rawUrl);
@@ -35,7 +35,7 @@ public class URL {
             if (c == '%') {
                 return true;
             }
-            for (char reserved : hostAllowedChars) {
+            for (char reserved : subDelimsChars) {
                 if (reserved == c) {
                     return false;
                 }
@@ -72,7 +72,7 @@ public class URL {
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
             if (shouldEscape(c, zone)) {
-                result += "%" + Integer.toHexString(c);
+                result += "%" + Integer.toHexString(c).toUpperCase();
             } else {
                 result += c;
             }
@@ -80,7 +80,7 @@ public class URL {
         return result;
     }
 
-    private String unescape(String str, EncodeZone zone) {
+    private String unescape(String str, EncodeZone zone) throws MalformedURLException {
         char[] chars = str.toCharArray();
         String result = "";
         for (int i = 0; i < chars.length; ) {
@@ -90,8 +90,12 @@ public class URL {
                 if (zone == EncodeZone.HOST && hex == "25") {
                     continue;
                 }
-                int val = Integer.parseInt(hex, 16);
-                result += (char) val;
+                try {
+                    int val = Integer.parseInt(hex, 16);
+                    result += (char) val;
+                } catch (NumberFormatException e) {
+                    throw new MalformedURLException("invalid escape sequence: %" + hex);
+                }
                 i += 3;
             } else {
                 result += c;
@@ -126,23 +130,36 @@ public class URL {
 
         index = remaining.indexOf("?");
         if (index > 0) {
-            query = remaining.substring(index + 1, remaining.length());
+            String qr = remaining.substring(index + 1, remaining.length());
+            if (!qr.isEmpty()) {
+                query = qr;
+            }
             remaining = remaining.substring(0, index);
         }
 
         remaining = parseProtocol(remaining);
 
-        if (remaining.startsWith("//")) {
+        if (protocol != null && !protocol.isEmpty()) {
+            if (!remaining.startsWith("/")) {
+                opaque = remaining;
+                return;
+            }
+        }
+        if (((protocol != null && !protocol.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
             remaining = remaining.substring(2, remaining.length());
+            int i = remaining.indexOf("/");
+            if (i >= 0) {
+                parseAuthority(remaining.substring(0, i));
+                remaining = remaining.substring(i, remaining.length());
+            } else {
+                parseAuthority(remaining);
+                remaining = "";
+            }
         }
 
-        index = remaining.indexOf("/");
-        if (index > 0) {
-            path = unescape(remaining.substring(index, remaining.length()), EncodeZone.PATH);
-            remaining = remaining.substring(0, index);
+        if (!remaining.isEmpty()) {
+            path = unescape(remaining, EncodeZone.PATH);
         }
-
-        parseAuthority(remaining);
     }
 
     private String parseProtocol(String remaining) throws MalformedURLException {
@@ -198,9 +215,6 @@ public class URL {
                 throw new MalformedURLException("invalid host");
             }
             String hostPart = parts[0];
-            if (hostPart == null || hostPart == "" || hostPart.split(".", -1).length < 2) {
-                throw new MalformedURLException("invalid host");
-            }
             if (parts.length == 2) {
                 try {
                     Integer.valueOf(parts[1]);
@@ -209,7 +223,10 @@ public class URL {
                 }
             }
         }
-        host = unescape(str.toLowerCase(), EncodeZone.HOST);
+        String ht = unescape(str.toLowerCase(), EncodeZone.HOST);
+        if (!ht.isEmpty()) {
+            host = ht;
+        }
     }
 
     private boolean validOptionalPort(String portStr) {
@@ -270,27 +287,32 @@ public class URL {
         return toString().equals(other.toString());
     }
 
+    // TODO: use a bytes buffer to speed this up?
     @Override
     public String toString() {
-        if (stringRepr != null) {
-            return stringRepr;
-        }
         String result = "";
         if (protocol != null && !protocol.isEmpty()) {
-            result += protocol + "://";
+            result += protocol + ":";
         }
-        if (username != null) {
-            result += escape(username, EncodeZone.CREDENTIALS);
-            if (password != null) {
-                result += ":" + escape(password, EncodeZone.CREDENTIALS);
+        if (opaque != null) {
+            result += opaque;
+        } else {
+            if (protocol != null || host != null) {
+                result += "//";
+                if (username != null) {
+                    result += escape(username, EncodeZone.CREDENTIALS);
+                    if (password != null) {
+                        result += ":" + escape(password, EncodeZone.CREDENTIALS);
+                    }
+                    result += "@";
+                }
+                if (host != null) {
+                    result += escape(host, EncodeZone.HOST);
+                }
             }
-            result += "@";
-        }
-        if (host != null) {
-            result += escape(host, EncodeZone.HOST);
-        }
-        if (path != null) {
-            result += escape(path, EncodeZone.PATH);
+            if (path != null) {
+                result += escape(path, EncodeZone.PATH);
+            }
         }
         if (query != null) {
             result += "?" + query;
@@ -298,7 +320,6 @@ public class URL {
         if (fragment != null) {
             result += "#" + fragment;
         }
-        stringRepr = result;
         return result;
     }
 
