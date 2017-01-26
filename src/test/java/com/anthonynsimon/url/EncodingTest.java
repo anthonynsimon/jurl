@@ -45,7 +45,7 @@ public class EncodingTest {
     @Test
     public void testEscaping() throws Exception {
         for (EncodingTestCase testCase : escapeCases) {
-            assertEquals(testCase.expectedOutput, EscapeUtils.escape(testCase.input, URLPart.ENCODE_ZONE));
+            assertEquals(testCase.expectedOutput, EscapeUtils.escape(testCase.input, URL.URLPart.ENCODE_ZONE));
         }
     }
 

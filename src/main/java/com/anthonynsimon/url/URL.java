@@ -242,4 +242,13 @@ public class URL {
     public int hashCode() {
         return toString().hashCode();
     }
+
+    protected enum URLPart {
+        CREDENTIALS,
+        HOST,
+        PATH,
+        QUERY,
+        FRAGMENT,
+        ENCODE_ZONE,
+    }
 }

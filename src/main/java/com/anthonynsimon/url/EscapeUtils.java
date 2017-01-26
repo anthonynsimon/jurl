@@ -12,12 +12,12 @@ class EscapeUtils {
     private static final char[] unreservedChars = {'-', '_', '.', '~'};
     private static final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
 
-    private static boolean shouldEscape(char c, URLPart zone) {
+    private static boolean shouldEscape(char c, URL.URLPart zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
             return false;
         }
 
-        if (zone == URLPart.HOST || zone == URLPart.PATH) {
+        if (zone == URL.URLPart.HOST || zone == URL.URLPart.PATH) {
             if (c == '%') {
                 return true;
             }
@@ -52,7 +52,7 @@ class EscapeUtils {
         return true;
     }
 
-    public static String escape(String str, URLPart zone) {
+    public static String escape(String str, URL.URLPart zone) {
         byte[] bytes;
         try {
             bytes = str.getBytes("UTF-8");
