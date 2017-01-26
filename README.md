@@ -1,6 +1,5 @@
 # jurl
-[![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds)  
-
+[![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds) [![javadocs](https://img.shields.io/badge/javadocs-latest-brightgreen.svg)](http://anthonynsimon.com/javadocs/jurl/)
 Fast and simple URL parsing for Java with IPv6 support.
 
 # Why
@@ -12,7 +11,7 @@ Fast and simple URL parsing for Java with IPv6 support.
 - No dependencies.
 
 # Documentation
-TODO: host javadoc on Github
+See http://anthonynsimon.com/javadocs/jurl/ for the most recent docs.
 
 # Issues
 
