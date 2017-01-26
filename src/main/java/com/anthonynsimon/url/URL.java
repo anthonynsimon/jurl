@@ -1,17 +1,6 @@
 package com.anthonynsimon.url;
 
 public class URL {
-    protected enum EncodeZone {
-        CREDENTIALS,
-        HOST,
-        PATH,
-        QUERY,
-        FRAGMENT,
-    }
-
-    private static final char[] reservedChars = {'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'};
-    private static final char[] subDelimsChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
-    private static final char[] unreservedChars = {'-', '_', '.', '~'};
 
     private String protocol;
     private String username;
@@ -26,84 +15,6 @@ public class URL {
         parse(rawUrl);
     }
 
-    private boolean shouldEscape(char c, EncodeZone zone) {
-        if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
-            return false;
-        }
-
-        if (zone == EncodeZone.HOST || zone == EncodeZone.PATH) {
-            if (c == '%') {
-                return true;
-            }
-            for (char reserved : subDelimsChars) {
-                if (reserved == c) {
-                    return false;
-                }
-            }
-        }
-
-        for (char unreserved : unreservedChars) {
-            if (unreserved == c) {
-                return false;
-            }
-        }
-
-        for (char reserved : new char[]{'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'}) {
-            if (reserved == c) {
-                switch (zone) {
-                    case PATH:
-                        return c == '?';
-                    case CREDENTIALS:
-                        return c == '@' || c == '/' || c == '?' || c == ':';
-                    case QUERY:
-                        return true;
-                    case FRAGMENT:
-                        return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private String escape(String str, EncodeZone zone) {
-        char[] chars = str.toCharArray();
-        String result = "";
-        for (int i = 0; i < chars.length; i++) {
-            char c = chars[i];
-            if (shouldEscape(c, zone)) {
-                result += "%" + Integer.toHexString(c).toUpperCase();
-            } else {
-                result += c;
-            }
-        }
-        return result;
-    }
-
-    private String unescape(String str, EncodeZone zone) throws MalformedURLException {
-        char[] chars = str.toCharArray();
-        String result = "";
-        for (int i = 0; i < chars.length; ) {
-            char c = chars[i];
-            if (c == '%' && i + 2 < chars.length) {
-                String hex = "" + chars[i + 1] + chars[i + 2];
-                if (zone == EncodeZone.HOST && hex == "25") {
-                    continue;
-                }
-                try {
-                    int val = Integer.parseInt(hex, 16);
-                    result += (char) val;
-                } catch (NumberFormatException e) {
-                    throw new MalformedURLException("invalid escape sequence: %" + hex);
-                }
-                i += 3;
-            } else {
-                result += c;
-                i++;
-            }
-        }
-        return result;
-    }
 
     private void parse(String rawUrl) throws MalformedURLException {
         if (rawUrl == null) {
@@ -158,7 +69,7 @@ public class URL {
         }
 
         if (!remaining.isEmpty()) {
-            path = unescape(remaining, EncodeZone.PATH);
+            path = Encoding.unescape(remaining, EncodeZone.PATH);
         }
     }
 
@@ -189,10 +100,10 @@ public class URL {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                username = unescape(parts[0], EncodeZone.CREDENTIALS);
-                password = unescape(parts[1], EncodeZone.CREDENTIALS);
+                username = Encoding.unescape(parts[0], EncodeZone.CREDENTIALS);
+                password = Encoding.unescape(parts[1], EncodeZone.CREDENTIALS);
             } else {
-                username = unescape(credentials, EncodeZone.CREDENTIALS);
+                username = Encoding.unescape(credentials, EncodeZone.CREDENTIALS);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -223,7 +134,7 @@ public class URL {
                 }
             }
         }
-        String ht = unescape(str.toLowerCase(), EncodeZone.HOST);
+        String ht = Encoding.unescape(str.toLowerCase(), EncodeZone.HOST);
         if (!ht.isEmpty()) {
             host = ht;
         }
@@ -287,7 +198,6 @@ public class URL {
         return toString().equals(other.toString());
     }
 
-    // TODO: use a bytes buffer to speed this up?
     @Override
     public String toString() {
         String result = "";
@@ -300,18 +210,18 @@ public class URL {
             if (protocol != null || host != null) {
                 result += "//";
                 if (username != null) {
-                    result += escape(username, EncodeZone.CREDENTIALS);
+                    result += Encoding.escape(username, EncodeZone.CREDENTIALS);
                     if (password != null) {
-                        result += ":" + escape(password, EncodeZone.CREDENTIALS);
+                        result += ":" + Encoding.escape(password, EncodeZone.CREDENTIALS);
                     }
                     result += "@";
                 }
                 if (host != null) {
-                    result += escape(host, EncodeZone.HOST);
+                    result += Encoding.escape(host, EncodeZone.HOST);
                 }
             }
             if (path != null) {
-                result += escape(path, EncodeZone.PATH);
+                result += Encoding.escape(path, EncodeZone.PATH);
             }
         }
         if (query != null) {
