@@ -1,6 +1,6 @@
 package com.anthonynsimon.url;
 
-enum EncodeZone {
+enum URLPart {
     CREDENTIALS,
     HOST,
     PATH,

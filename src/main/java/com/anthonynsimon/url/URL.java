@@ -69,7 +69,7 @@ public class URL {
         }
 
         if (!remaining.isEmpty()) {
-            path = Encoding.unescape(remaining, EncodeZone.PATH);
+            path = URLEscaper.unescape(remaining, URLPart.PATH);
         }
     }
 
@@ -100,10 +100,10 @@ public class URL {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                username = Encoding.unescape(parts[0], EncodeZone.CREDENTIALS);
-                password = Encoding.unescape(parts[1], EncodeZone.CREDENTIALS);
+                username = URLEscaper.unescape(parts[0], URLPart.CREDENTIALS);
+                password = URLEscaper.unescape(parts[1], URLPart.CREDENTIALS);
             } else {
-                username = Encoding.unescape(credentials, EncodeZone.CREDENTIALS);
+                username = URLEscaper.unescape(credentials, URLPart.CREDENTIALS);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -134,7 +134,7 @@ public class URL {
                 }
             }
         }
-        String ht = Encoding.unescape(str.toLowerCase(), EncodeZone.HOST);
+        String ht = URLEscaper.unescape(str.toLowerCase(), URLPart.HOST);
         if (!ht.isEmpty()) {
             host = ht;
         }
@@ -210,18 +210,18 @@ public class URL {
             if (scheme != null || host != null) {
                 result += "//";
                 if (username != null) {
-                    result += Encoding.escape(username, EncodeZone.CREDENTIALS);
+                    result += URLEscaper.escape(username, URLPart.CREDENTIALS);
                     if (password != null) {
-                        result += ":" + Encoding.escape(password, EncodeZone.CREDENTIALS);
+                        result += ":" + URLEscaper.escape(password, URLPart.CREDENTIALS);
                     }
                     result += "@";
                 }
                 if (host != null) {
-                    result += Encoding.escape(host, EncodeZone.HOST);
+                    result += URLEscaper.escape(host, URLPart.HOST);
                 }
             }
             if (path != null) {
-                result += Encoding.escape(path, EncodeZone.PATH);
+                result += URLEscaper.escape(path, URLPart.PATH);
             }
         }
         if (query != null) {

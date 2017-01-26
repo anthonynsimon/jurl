@@ -1,17 +1,17 @@
 package com.anthonynsimon.url;
 
-class Encoding {
+class URLEscaper {
 
     private static final char[] reservedChars = {'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'};
     private static final char[] subDelimsChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
     private static final char[] unreservedChars = {'-', '_', '.', '~'};
 
-    private static boolean shouldEscape(char c, EncodeZone zone) {
+    private static boolean shouldEscape(char c, URLPart zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
             return false;
         }
 
-        if (zone == EncodeZone.HOST || zone == EncodeZone.PATH) {
+        if (zone == URLPart.HOST || zone == URLPart.PATH) {
             if (c == '%') {
                 return true;
             }
@@ -46,7 +46,7 @@ class Encoding {
         return true;
     }
 
-    public static String escape(String str, EncodeZone zone) {
+    public static String escape(String str, URLPart zone) {
         char[] chars = str.toCharArray();
         String result = "";
         for (int i = 0; i < chars.length; i++) {
@@ -60,14 +60,14 @@ class Encoding {
         return result;
     }
 
-    public static String unescape(String str, EncodeZone zone) throws MalformedURLException {
+    public static String unescape(String str, URLPart zone) throws MalformedURLException {
         char[] chars = str.toCharArray();
         String result = "";
         for (int i = 0; i < chars.length; ) {
             char c = chars[i];
             if (c == '%' && i + 2 < chars.length) {
                 String hex = "" + chars[i + 1] + chars[i + 2];
-                if (zone == EncodeZone.HOST && hex == "25") {
+                if (zone == URLPart.HOST && hex == "25") {
                     continue;
                 }
                 try {
