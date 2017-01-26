@@ -309,7 +309,6 @@ public class URLTest {
                     "https://www.example.de/?q=foo#q=bar"
             ),
             // Query string and fragment with escaped chars
-            // TODO: shouldn't be unescaped?
             new URLTestCase(
                     "https://www.example.de/?q%26foo#a%26b",
                     "https",
@@ -656,8 +655,6 @@ public class URLTest {
                     null,
                     "http://test.%E4%B8%96%E7%95%8C.com/foo"
             ),
-            // TODO: handle absolute and relative references
-            // TODO: handle path resolving
     };
 
     @Test

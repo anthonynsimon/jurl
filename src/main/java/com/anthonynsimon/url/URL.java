@@ -8,6 +8,8 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
  * scheme://username:password@host:port/path?query#fragment
  */
 public class URL {
+    // TODO: handle absolute and relative references
+    // TODO: handle path resolving
 
     private String scheme;
     private String username;
