@@ -1,4 +1,4 @@
-package com.anthonynsimon.url;
+package com.anthonynsimon.url.exceptions;
 
 public class InvalidHexException extends Exception {
     public InvalidHexException() {

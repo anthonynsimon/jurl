@@ -1,5 +1,6 @@
 package com.anthonynsimon.url;
 
+import com.anthonynsimon.url.exceptions.MalformedURLException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -662,7 +663,7 @@ public class URLTest {
     @Test
     public void testUrls() throws Exception {
         for (URLTestCase testCase : urlTestCases) {
-            URL url = new URL(testCase.input);
+            URL url = URL.parse(testCase.input);
             assertEquals(testCase.expectedScheme, url.scheme());
             assertEquals(testCase.expectedUsername, url.username());
             assertEquals(testCase.expectedPassword, url.password());
@@ -677,57 +678,57 @@ public class URLTest {
 
     @Test(expected = MalformedURLException.class)
     public void testNullParam() throws MalformedURLException {
-        URL url = new URL("");
+        URL url = URL.parse("");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testEmpty() throws MalformedURLException {
-        URL url = new URL("");
+        URL url = URL.parse("");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testColonWithoutPort() throws MalformedURLException {
-        URL url = new URL("http://host:/abc/[one_two]");
+        URL url = URL.parse("http://host:/abc/[one_two]");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedIPv6() throws MalformedURLException {
-        URL url = new URL("http://e34::1");
+        URL url = URL.parse("http://e34::1");
     }
 
 
     @Test
     public void testEquals() throws Exception {
-        URL urlA = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
-        URL urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        URL urlA = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        URL urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
         assertTrue(urlA.equals(urlB));
 
-        urlA = new URL("http://domain.com/path/to/RESOURCE.html?q=abc#section");
-        urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        urlA = URL.parse("http://domain.com/path/to/RESOURCE.html?q=abc#section");
+        urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
         assertFalse(urlA.equals(urlB));
 
-        urlA = new URL("http://www.DOMAIN.com/path/to/RESOURCE.html?q=abc#section");
-        urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        urlA = URL.parse("http://www.DOMAIN.com/path/to/RESOURCE.html?q=abc#section");
+        urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
         assertTrue(urlA.equals(urlB));
 
-        urlA = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc");
-        urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        urlA = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
+        urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
         assertFalse(urlA.equals(urlB));
 
-        urlA = new URL("http://domain.com/path/to/RESOURCE.html?q=abc");
-        urlB = new URL("http://domain.com/path/to/RESOURCE.html?q=abc#");
+        urlA = URL.parse("http://domain.com/path/to/RESOURCE.html?q=abc");
+        urlB = URL.parse("http://domain.com/path/to/RESOURCE.html?q=abc#");
         assertTrue(urlA.equals(urlB));
 
-        urlA = new URL("http://www.domain.de/path/to/RESOURCE.html?q=abc");
-        urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc");
+        urlA = URL.parse("http://www.domain.de/path/to/RESOURCE.html?q=abc");
+        urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         assertFalse(urlA.equals(urlB));
 
-        urlA = new URL("http://www.domain.com:8080/path/to/RESOURCE.html?q=abc");
-        urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc");
+        urlA = URL.parse("http://www.domain.com:8080/path/to/RESOURCE.html?q=abc");
+        urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         assertFalse(urlA.equals(urlB));
 
-        urlA = new URL("http://www.domain.com/path/to/ANOTHER.html?q=abc");
-        urlB = new URL("http://www.domain.com/path/to/RESOURCE.html?q=abc");
+        urlA = URL.parse("http://www.domain.com/path/to/ANOTHER.html?q=abc");
+        urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         assertFalse(urlA.equals(urlB));
     }
 

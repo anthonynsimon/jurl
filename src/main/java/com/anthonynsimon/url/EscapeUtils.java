@@ -1,14 +1,16 @@
 package com.anthonynsimon.url;
 
+import com.anthonynsimon.url.exceptions.InvalidHexException;
+import com.anthonynsimon.url.exceptions.MalformedURLException;
+
 import java.io.UnsupportedEncodingException;
 
-class URLEscaper {
+class EscapeUtils {
 
     private static final char[] reservedChars = {'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'};
     private static final char[] subDelimsChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
     private static final char[] unreservedChars = {'-', '_', '.', '~'};
     private static final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
-
 
     private static boolean shouldEscape(char c, URLPart zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {

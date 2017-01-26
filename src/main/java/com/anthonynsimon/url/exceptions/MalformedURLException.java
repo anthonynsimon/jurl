@@ -1,4 +1,4 @@
-package com.anthonynsimon.url;
+package com.anthonynsimon.url.exceptions;
 
 public class MalformedURLException extends Exception {
     public MalformedURLException() {

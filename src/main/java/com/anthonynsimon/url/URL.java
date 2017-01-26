@@ -1,5 +1,7 @@
 package com.anthonynsimon.url;
 
+import com.anthonynsimon.url.exceptions.MalformedURLException;
+
 public class URL {
 
     private String scheme;
@@ -11,12 +13,16 @@ public class URL {
     private String fragment;
     private String opaque;
 
-    // TODO: allow for manual construction of a url?
-    public URL(String rawUrl) throws MalformedURLException {
-        parse(rawUrl);
+    public URL() {
     }
 
-    private void parse(String rawUrl) throws MalformedURLException {
+    public static URL parse(String url) throws MalformedURLException {
+        URL u = new URL();
+        u.parseAll(url);
+        return u;
+    }
+
+    private void parseAll(String rawUrl) throws MalformedURLException {
         if (rawUrl == null) {
             throw new MalformedURLException("url is empty");
         }
@@ -69,7 +75,7 @@ public class URL {
         }
 
         if (!remaining.isEmpty()) {
-            path = URLEscaper.unescape(remaining);
+            path = EscapeUtils.unescape(remaining);
         }
     }
 
@@ -100,10 +106,10 @@ public class URL {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                username = URLEscaper.unescape(parts[0]);
-                password = URLEscaper.unescape(parts[1]);
+                username = EscapeUtils.unescape(parts[0]);
+                password = EscapeUtils.unescape(parts[1]);
             } else {
-                username = URLEscaper.unescape(credentials);
+                username = EscapeUtils.unescape(credentials);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -123,9 +129,8 @@ public class URL {
         } else {
             String[] parts = str.split(":", -1);
             if (parts.length > 2) {
-                throw new MalformedURLException("invalid host");
+                throw new MalformedURLException("invalid host: " + parts.toString());
             }
-            String hostPart = parts[0];
             if (parts.length == 2) {
                 try {
                     Integer.valueOf(parts[1]);
@@ -134,7 +139,7 @@ public class URL {
                 }
             }
         }
-        String ht = URLEscaper.unescape(str.toLowerCase());
+        String ht = EscapeUtils.unescape(str.toLowerCase());
         if (!ht.isEmpty()) {
             host = ht;
         }
@@ -210,18 +215,18 @@ public class URL {
             if (scheme != null || host != null) {
                 result += "//";
                 if (username != null) {
-                    result += URLEscaper.escape(username, URLPart.CREDENTIALS);
+                    result += EscapeUtils.escape(username, URLPart.CREDENTIALS);
                     if (password != null) {
-                        result += ":" + URLEscaper.escape(password, URLPart.CREDENTIALS);
+                        result += ":" + EscapeUtils.escape(password, URLPart.CREDENTIALS);
                     }
                     result += "@";
                 }
                 if (host != null) {
-                    result += URLEscaper.escape(host, URLPart.HOST);
+                    result += EscapeUtils.escape(host, URLPart.HOST);
                 }
             }
             if (path != null) {
-                result += URLEscaper.escape(path, URLPart.PATH);
+                result += EscapeUtils.escape(path, URLPart.PATH);
             }
         }
         if (query != null) {
