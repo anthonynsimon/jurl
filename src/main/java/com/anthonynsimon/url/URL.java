@@ -11,10 +11,10 @@ public class URL {
     private String fragment;
     private String opaque;
 
+    // TODO: allow for manual construction of a url?
     public URL(String rawUrl) throws MalformedURLException {
         parse(rawUrl);
     }
-
 
     private void parse(String rawUrl) throws MalformedURLException {
         if (rawUrl == null) {
