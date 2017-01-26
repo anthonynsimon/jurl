@@ -20,6 +20,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
+tasks.withType(Javadoc) {
+    failOnError = false
+}
+
 tasks.withType(Test) {
     systemProperty "file.encoding", 'UTF-8'
     testLogging {
