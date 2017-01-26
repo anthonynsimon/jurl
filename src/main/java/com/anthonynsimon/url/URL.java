@@ -3,9 +3,9 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 /**
- * URL represents a parsed URL string and is of the form:
- * <p>
- * scheme://username:password@host:port/path?query#fragment
+ * URL is a reference to a web resource. This class implements functionality for parsing and
+ * manipulating the various parts that make up a URL. Once parsed it is usually of the form:
+ * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
 public class URL {
     // TODO: handle absolute and relative references
@@ -22,9 +22,6 @@ public class URL {
 
     /**
      * Returns a new URL object after parsing the provided URL string.
-     *
-     * @param url is a string with the url to be parsed.
-     * @throws MalformedURLException if one or more errors occur during parsing.
      */
     public static URL parse(String url) throws MalformedURLException {
         URL u = new URL();
@@ -34,10 +31,6 @@ public class URL {
 
     /**
      * Parses all the URL parts from the provided string.
-     * <p>
-     * scheme://username:password@host:port/path?query#fragment
-     *
-     * @throws MalformedURLException if one or more errors occur during parsing.
      */
     private void parseAll(String rawUrl) throws MalformedURLException {
         if (rawUrl == null) {
@@ -98,10 +91,6 @@ public class URL {
 
     /**
      * Parses the scheme from the provided string.
-     * <p>
-     * [SCHEME]://username:password@host:port/path?query#fragment
-     *
-     * @throws MalformedURLException if one or more errors occur during parsing.
      */
     private String parseScheme(String remaining) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
@@ -126,10 +115,6 @@ public class URL {
 
     /**
      * Parses the authority from the provided string.
-     * <p>
-     * scheme://[AUTHORITY]/path?query#fragment
-     *
-     * @throws MalformedURLException if one or more errors occur during parsing.
      */
     private void parseAuthority(String authority) throws MalformedURLException {
         int i = authority.lastIndexOf('@');
@@ -149,10 +134,6 @@ public class URL {
 
     /**
      * Parses the host from the provided string.
-     * <p>
-     * scheme://username:password@[HOST]/path?query#fragment
-     *
-     * @throws MalformedURLException if one or more errors occur during parsing.
      */
     private void parseHost(String str) throws MalformedURLException {
         if (str.startsWith("[")) {
@@ -263,8 +244,6 @@ public class URL {
 
     /**
      * Returns true if the two Objects are instances of URL and their string representations match.
-     *
-     * @param other is the Object to compare with.
      */
     @Override
     public boolean equals(Object other) {
@@ -324,6 +303,9 @@ public class URL {
         return toString().hashCode();
     }
 
+    /**
+     * URLPart is used to distinguish between the parts of the url when encoding/decoding.
+     */
     protected enum URLPart {
         CREDENTIALS,
         HOST,
