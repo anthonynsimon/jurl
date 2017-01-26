@@ -2,6 +2,11 @@ package com.anthonynsimon.url;
 
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
+/**
+ * URL represents a parsed URL string and is of the form:
+ * <p>
+ * scheme://username:password@host:port/path?query#fragment
+ */
 public class URL {
 
     private String scheme;
@@ -13,15 +18,25 @@ public class URL {
     private String fragment;
     private String opaque;
 
-    public URL() {
-    }
-
+    /**
+     * Returns a new URL object after parsing the provided URL string.
+     *
+     * @param url is a string with the url to be parsed.
+     * @throws MalformedURLException if one or more errors occur during parsing.
+     */
     public static URL parse(String url) throws MalformedURLException {
         URL u = new URL();
         u.parseAll(url);
         return u;
     }
 
+    /**
+     * Parses all the URL parts from the provided string.
+     * <p>
+     * scheme://username:password@host:port/path?query#fragment
+     *
+     * @throws MalformedURLException if one or more errors occur during parsing.
+     */
     private void parseAll(String rawUrl) throws MalformedURLException {
         if (rawUrl == null) {
             throw new MalformedURLException("url is empty");
@@ -79,6 +94,13 @@ public class URL {
         }
     }
 
+    /**
+     * Parses the scheme from the provided string.
+     * <p>
+     * [SCHEME]://username:password@host:port/path?query#fragment
+     *
+     * @throws MalformedURLException if one or more errors occur during parsing.
+     */
     private String parseScheme(String remaining) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
             char c = remaining.charAt(i);
@@ -100,6 +122,13 @@ public class URL {
         return remaining;
     }
 
+    /**
+     * Parses the authority from the provided string.
+     * <p>
+     * scheme://[AUTHORITY]/path?query#fragment
+     *
+     * @throws MalformedURLException if one or more errors occur during parsing.
+     */
     private void parseAuthority(String authority) throws MalformedURLException {
         int i = authority.lastIndexOf('@');
         if (i >= 0) {
@@ -116,6 +145,13 @@ public class URL {
         parseHost(authority);
     }
 
+    /**
+     * Parses the host from the provided string.
+     * <p>
+     * scheme://username:password@[HOST]/path?query#fragment
+     *
+     * @throws MalformedURLException if one or more errors occur during parsing.
+     */
     private void parseHost(String str) throws MalformedURLException {
         if (str.startsWith("[")) {
             int i = str.lastIndexOf("]");
@@ -123,7 +159,7 @@ public class URL {
                 throw new MalformedURLException("IPv6 detected, but missing closing ']' token");
             }
             String portPart = str.substring(i + 1, str.length());
-            if (!validOptionalPort(portPart)) {
+            if (!isPortValid(portPart)) {
                 throw new MalformedURLException("invalid port");
             }
         } else {
@@ -145,7 +181,19 @@ public class URL {
         }
     }
 
-    private boolean validOptionalPort(String portStr) {
+    /**
+     * Returns true if the provided port string contains a valid port number.
+     * Note that an empty string is a valid port number since it's optional.
+     * <p>
+     * For example:
+     * <p>
+     * ''      => TRUE
+     * null    => TRUE
+     * ':8080' => TRUE
+     * ':ab80' => FALSE
+     * ':abc'  => FALSE
+     */
+    private boolean isPortValid(String portStr) {
         if (portStr == null || portStr.isEmpty()) {
             return true;
         }
@@ -162,35 +210,60 @@ public class URL {
         return true;
     }
 
+    /**
+     * Returns the scheme ('http' or 'file' or 'ftp' etc...) of the URL if it exists.
+     */
     public String scheme() {
         return scheme;
     }
 
+    /**
+     * Returns the username part of the userinfo if it exists.
+     */
     public String username() {
         return username;
     }
 
+    /**
+     * Returns the password part of the userinfo if it exists.
+     */
     public String password() {
         return password;
     }
 
+    /**
+     * Returns the host ('www.example.com' or '192.168.0.1:8080' or '[fde2:d7de:302::]') of the URL if it exists.
+     */
     public String host() {
         return host;
     }
 
-
+    /**
+     * Returns the path ('/path/to/my/file.html') of the URL if it exists.
+     */
     public String path() {
         return path;
     }
 
+    /**
+     * Returns the query ('?q=foo&bar') of the URL if it exists.
+     */
     public String query() {
         return query;
     }
 
+    /**
+     * Returns the fragment ('#foo&bar') of the URL if it exists.
+     */
     public String fragment() {
         return fragment;
     }
 
+    /**
+     * Returns true if the two Objects are instances of URL and their string representations match.
+     *
+     * @param other is the Object to compare with.
+     */
     @Override
     public boolean equals(Object other) {
         if (other == null) {
@@ -203,6 +276,9 @@ public class URL {
         return toString().equals(other.toString());
     }
 
+    /**
+     * Returns a string representation of the all parts of the URL that are not null.
+     */
     @Override
     public String toString() {
         String result = "";
@@ -238,6 +314,9 @@ public class URL {
         return result;
     }
 
+    /**
+     * Returns the hashCode of the string representation of the URL.
+     */
     @Override
     public int hashCode() {
         return toString().hashCode();
