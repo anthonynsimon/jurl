@@ -69,7 +69,7 @@ public class URL {
         }
 
         if (!remaining.isEmpty()) {
-            path = URLEscaper.unescape(remaining, URLPart.PATH);
+            path = URLEscaper.unescape(remaining);
         }
     }
 
@@ -100,10 +100,10 @@ public class URL {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                username = URLEscaper.unescape(parts[0], URLPart.CREDENTIALS);
-                password = URLEscaper.unescape(parts[1], URLPart.CREDENTIALS);
+                username = URLEscaper.unescape(parts[0]);
+                password = URLEscaper.unescape(parts[1]);
             } else {
-                username = URLEscaper.unescape(credentials, URLPart.CREDENTIALS);
+                username = URLEscaper.unescape(credentials);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -134,7 +134,7 @@ public class URL {
                 }
             }
         }
-        String ht = URLEscaper.unescape(str.toLowerCase(), URLPart.HOST);
+        String ht = URLEscaper.unescape(str.toLowerCase());
         if (!ht.isEmpty()) {
             host = ht;
         }

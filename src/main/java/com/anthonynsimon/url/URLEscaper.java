@@ -84,7 +84,7 @@ class URLEscaper {
         return result;
     }
 
-    public static String unescape(String str, URLPart zone) throws MalformedURLException {
+    public static String unescape(String str) throws MalformedURLException {
         char[] chars = str.toCharArray();
         String result = "";
         int len = str.length();
