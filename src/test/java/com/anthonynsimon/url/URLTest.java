@@ -652,7 +652,7 @@ public class URLTest {
     public void testUrls() throws Exception {
         for (URLTestCase testCase : urlTestCases) {
             URL url = new URL(testCase.input);
-            assertEquals(testCase.expectedProtocol, url.protocol());
+            assertEquals(testCase.expectedScheme, url.scheme());
             assertEquals(testCase.expectedUsername, url.username());
             assertEquals(testCase.expectedPassword, url.password());
             assertEquals(testCase.expectedHost, url.host());
@@ -722,7 +722,7 @@ public class URLTest {
 
     private class URLTestCase {
         public String input;
-        public String expectedProtocol;
+        public String expectedScheme;
         public String expectedUsername;
         public String expectedPassword;
         public String expectedHost;
@@ -731,9 +731,9 @@ public class URLTest {
         public String expectedFragment;
         public String expectedStringRepr;
 
-        public URLTestCase(String input, String expectedProtocol, String expectedUsername, String expectedPassword, String expectedHost, String expectedPath, String expectedQuery, String expectedFragment, String expectedStringRepr) {
+        public URLTestCase(String input, String expectedScheme, String expectedUsername, String expectedPassword, String expectedHost, String expectedPath, String expectedQuery, String expectedFragment, String expectedStringRepr) {
             this.input = input;
-            this.expectedProtocol = expectedProtocol;
+            this.expectedScheme = expectedScheme;
             this.expectedUsername = expectedUsername;
             this.expectedPassword = expectedPassword;
             this.expectedHost = expectedHost;

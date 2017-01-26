@@ -2,7 +2,7 @@ package com.anthonynsimon.url;
 
 public class URL {
 
-    private String protocol;
+    private String scheme;
     private String username;
     private String password;
     private String host;
@@ -48,15 +48,15 @@ public class URL {
             remaining = remaining.substring(0, index);
         }
 
-        remaining = parseProtocol(remaining);
+        remaining = parseScheme(remaining);
 
-        if (protocol != null && !protocol.isEmpty()) {
+        if (scheme != null && !scheme.isEmpty()) {
             if (!remaining.startsWith("/")) {
                 opaque = remaining;
                 return;
             }
         }
-        if (((protocol != null && !protocol.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
+        if (((scheme != null && !scheme.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
             remaining = remaining.substring(2, remaining.length());
             int i = remaining.indexOf("/");
             if (i >= 0) {
@@ -73,21 +73,21 @@ public class URL {
         }
     }
 
-    private String parseProtocol(String remaining) throws MalformedURLException {
+    private String parseScheme(String remaining) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
             char c = remaining.charAt(i);
             if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
                 continue;
             } else if (c == ':') {
                 if (i == 0) {
-                    throw new MalformedURLException("missing protocol");
+                    throw new MalformedURLException("missing scheme");
                 }
-                protocol = remaining.substring(0, i).toLowerCase();
+                scheme = remaining.substring(0, i).toLowerCase();
                 remaining = remaining.substring(i + 1, remaining.length());
                 return remaining;
             } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
                 if (i == 0) {
-                    throw new MalformedURLException("bad protocol format");
+                    throw new MalformedURLException("bad scheme format");
                 }
             }
         }
@@ -157,8 +157,8 @@ public class URL {
         return true;
     }
 
-    public String protocol() {
-        return protocol;
+    public String scheme() {
+        return scheme;
     }
 
     public String username() {
@@ -201,13 +201,13 @@ public class URL {
     @Override
     public String toString() {
         String result = "";
-        if (protocol != null && !protocol.isEmpty()) {
-            result += protocol + ":";
+        if (scheme != null && !scheme.isEmpty()) {
+            result += scheme + ":";
         }
         if (opaque != null) {
             result += opaque;
         } else {
-            if (protocol != null || host != null) {
+            if (scheme != null || host != null) {
                 result += "//";
                 if (username != null) {
                     result += Encoding.escape(username, EncodeZone.CREDENTIALS);
