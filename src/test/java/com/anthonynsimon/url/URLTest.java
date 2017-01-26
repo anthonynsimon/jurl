@@ -620,7 +620,7 @@ public class URLTest {
                     "http://test.com//foo"
             ),
             // TODO: handle non-ascii chars
-//            // Non-ASCII
+            // Non-ASCII
 //            new URLTestCase(
 //                    "http://test.世界.com/foo",
 //                    "http",

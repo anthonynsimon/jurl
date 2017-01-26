@@ -6,4 +6,5 @@ enum URLPart {
     PATH,
     QUERY,
     FRAGMENT,
+    ENCODE_ZONE,
 }
