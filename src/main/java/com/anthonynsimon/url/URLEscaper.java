@@ -73,8 +73,7 @@ class URLEscaper {
             for (int j = 0; j < readBytes; j++) {
                 char c = (char) bytes[i];
                 if (shouldEscape(c, zone)) {
-//                    result += String.format("%%%02X", bytes[i]);
-                    result += "%" + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) >> 4) + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) & 15); // ~15x faster than above
+                    result += "%" + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) >> 4) + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) & 15);
                 } else {
                     result += c;
                 }
@@ -88,24 +87,71 @@ class URLEscaper {
     public static String unescape(String str, URLPart zone) throws MalformedURLException {
         char[] chars = str.toCharArray();
         String result = "";
-        for (int i = 0; i < chars.length; ) {
+        int len = str.length();
+        int i = 0;
+        while (i < chars.length) {
             char c = chars[i];
-            if (c == '%' && i + 2 < chars.length) {
-                String hex = "" + chars[i + 1] + chars[i + 2];
-                if (zone == URLPart.HOST && hex == "25") {
-                    continue;
-                }
-                try {
-                    int val = Integer.parseInt(hex, 16);
-                    result += (char) val;
-                } catch (NumberFormatException e) {
-                    throw new MalformedURLException("invalid escape sequence: %" + hex);
-                }
-                i += 3;
-            } else {
+            if (c != '%') {
                 result += c;
                 i++;
+            } else {
+                if (i + 2 >= len) {
+                    throw new MalformedURLException("invalid escape sequence");
+                }
+                byte code;
+                try {
+                    code = unhex(str.substring(i + 1, i + 3).toCharArray());
+                } catch (InvalidHexException e) {
+                    throw new MalformedURLException(e.getMessage());
+                }
+                int readBytes = 0;
+                for (short mask : utf8Masks) {
+                    if ((code & mask) == mask) {
+                        readBytes++;
+                    } else {
+                        break;
+                    }
+                }
+                byte[] buffer = new byte[readBytes];
+                for (int j = 0; j < readBytes; j++) {
+                    try {
+                        buffer[j] = unhex(str.substring(i + 1, i + 3).toCharArray());
+                    } catch (InvalidHexException e) {
+                        throw new MalformedURLException(e.getMessage());
+                    }
+                    i += 3;
+                }
+                result += new String(buffer);
             }
+        }
+        return result;
+    }
+
+    private static byte unhex(char[] hex) throws InvalidHexException {
+        int result = 0;
+        for (int i = 0; i < hex.length; i++) {
+            char c = hex[hex.length - i - 1];
+            int index = -1;
+            if ('0' <= c && c <= '9') {
+                index = c - '0';
+            } else if ('a' <= c && c <= 'f') {
+                index = c - 'a' + 10;
+            } else if ('A' <= c && c <= 'F') {
+                index = c - 'A' + 10;
+            }
+            if (index < 0 || index >= 16) {
+                throw new InvalidHexException("not a valid hex char: " + c);
+            }
+            result += index * pow(16, i);
+        }
+        return (byte) result;
+    }
+
+    private static int pow(int base, int exp) {
+        int result = 1;
+        while (exp > 0) {
+            result *= base;
+            exp--;
         }
         return result;
     }

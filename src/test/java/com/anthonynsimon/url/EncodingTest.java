@@ -27,36 +27,47 @@ public class EncodingTest {
     };
 
     private EncodingTestCase[] unescapeCases = new EncodingTestCase[]{
-//            new EncodingTestCase("", ""),
+            new EncodingTestCase("", ""),
             new EncodingTestCase("www.example.com/%20%C3%BF%20", "www.example.com/ ÿ "),
-//            new EncodingTestCase("one%26two%20three", "one&two three"),
-//            new EncodingTestCase("www.example.com", "www.example.com"),
-//            new EncodingTestCase("http://test.%C7%B7%C7%B8%20%C7%B9%C7%8C%C7%8D.com/foo", "http://test.ǷǸ ǹǌǍ.com/foo"),
-//            new EncodingTestCase("http%3A%2F%2F%E0%AF%B5.com", "http://௵.com"),
-//            new EncodingTestCase("_%25_~_--_/_", "_%1_~_--_/_"),
-//            new EncodingTestCase("_______", "_______"),
-//            new EncodingTestCase("%20%3F%26%3D%23%2B%25%21%3C%3E%23%22%7B%7D%7C%5C%5E%5B%5D%60%E2%98%BA%09%3A%2F%40%24%27%28%29%2A%2C%3B", " ?&=#+%!<>#\"{}|\\^[]`☺\t:/@$'()*,;"),
-//            new EncodingTestCase("%C3%BC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC", "ü€€€€€"),
-//            new EncodingTestCase("www.%C7%8A%C7%8B%20%C7%AD%C7%AE%C7%AF%C7%B0%C7%B1%C7%B2%E0%AF%B2%D4%8F%20%D4%B1%D4%B2%D4%B3%D4%B4%D4%B5%E0%AF%B3%E0%AF%B4%E0%AF%B5%20%C7%B3%20%C7%B4%20%C7%B5%20%C7%B6%20%C7%B7%C7%B8%20%C7%B9%C7%8C%C7%8D.com%2F%5Epath%3F", "www.Ǌǋ ǭǮǯǰǱǲ௲ԏ ԱԲԳԴԵ௳௴௵ ǳ Ǵ ǵ Ƕ ǷǸ ǹǌǍ.com/^path?"),
+            new EncodingTestCase("www.example.com/%20%c3%bF%20", "www.example.com/ ÿ "),
+            new EncodingTestCase("one%26two%20three", "one&two three"),
+            new EncodingTestCase("www.example.com", "www.example.com"),
+            new EncodingTestCase("http://test.%C7%B7%C7%B8%20%C7%B9%C7%8C%C7%8D.com/foo", "http://test.ǷǸ ǹǌǍ.com/foo"),
+            new EncodingTestCase("http%3a%2F%2F%E0%AF%B5.com", "http://௵.com"),
+            new EncodingTestCase("_%25_~_--_/_", "_%_~_--_/_"),
+            new EncodingTestCase("_______", "_______"),
+            new EncodingTestCase("%20%3F%26%3D%23%2B%25%21%3C%3E%23%22%7B%7D%7C%5C%5E%5B%5D%60%E2%98%BA%09%3A%2F%40%24%27%28%29%2A%2C%3B", " ?&=#+%!<>#\"{}|\\^[]`☺\t:/@$'()*,;"),
+            new EncodingTestCase("%C3%BC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC", "ü€€€€€"),
+            new EncodingTestCase("www.%C7%8A%C7%8B%20%C7%AD%C7%AE%C7%AF%C7%B0%C7%B1%C7%B2%E0%AF%B2%D4%8F%20%D4%B1%D4%B2%D4%B3%D4%B4%D4%B5%E0%AF%B3%E0%AF%B4%E0%AF%B5%20%C7%B3%20%C7%B4%20%C7%B5%20%C7%B6%20%C7%B7%C7%B8%20%C7%B9%C7%8C%C7%8D.com%2F%5Epath%3F", "www.Ǌǋ ǭǮǯǰǱǲ௲ԏ ԱԲԳԴԵ௳௴௵ ǳ Ǵ ǵ Ƕ ǷǸ ǹǌǍ.com/^path?"),
     };
 
     @Test
-    public void testEscaping() {
+    public void testEscaping() throws Exception {
         for (EncodingTestCase testCase : escapeCases) {
             assertEquals(testCase.expectedOutput, URLEscaper.escape(testCase.input, URLPart.ENCODE_ZONE));
         }
     }
-//
-//    @Test
-//    public void testUnescaping() throws Exception {
-//        for (EncodingTestCase testCase : unescapeCases) {
-//            assertEquals(testCase.expectedOutput, URLEscaper.unescape(testCase.input, URLPart.ENCODE_ZONE));
-//        }
-//    }
 
     @Test
-    public void testMalformedUnescape() {
+    public void testUnescaping() throws Exception {
+        for (EncodingTestCase testCase : unescapeCases) {
+            assertEquals(testCase.expectedOutput, URLEscaper.unescape(testCase.input, URLPart.ENCODE_ZONE));
+        }
+    }
 
+    @Test(expected = MalformedURLException.class)
+    public void testMalformedUnescape() throws Exception {
+        URLEscaper.unescape("_______%", URLPart.ENCODE_ZONE);
+    }
+
+    @Test(expected = MalformedURLException.class)
+    public void testMalformedUnescapeWithUnicodeMultiple() throws Exception {
+        URLEscaper.unescape("!__!__%Ƿabasda", URLPart.ENCODE_ZONE);
+    }
+
+    @Test(expected = MalformedURLException.class)
+    public void testMalformedUnescapeWithUnicodeSingle() throws Exception {
+        URLEscaper.unescape("!__!__%Ƿ", URLPart.ENCODE_ZONE);
     }
 
     class EncodingTestCase {

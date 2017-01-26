@@ -619,31 +619,42 @@ public class URLTest {
                     null,
                     "http://test.com//foo"
             ),
-            // TODO: handle non-ascii chars
+//            Non - ASCII
+            new URLTestCase(
+                    "http://test.世界.com/foo",
+                    "http",
+                    null,
+                    null,
+                    "test.世界.com",
+                    "/foo",
+                    null,
+                    null,
+                    "http://test.%E4%B8%96%E7%95%8C.com/foo"
+            ),
             // Non-ASCII
-//            new URLTestCase(
-//                    "http://test.世界.com/foo",
-//                    "http",
-//                    null,
-//                    null,
-//                    "test.世界.com",
-//                    "/foo",
-//                    null,
-//                    null,
-//                    "http://test.%4E16%754C.com/foo"
-//            ),
-//            // Non-ASCII
-//            new URLTestCase(
-//                    "http://test.%4E16%754C.com/foo",
-//                    "http",
-//                    null,
-//                    null,
-//                    "test.世界.com",
-//                    "/foo",
-//                    null,
-//                    null,
-//                    "http://test.%4E16%754C.com/foo"
-//            ),
+            new URLTestCase(
+                    "http://test.%E4%B8%96%E7%95%8C.com/foo",
+                    "http",
+                    null,
+                    null,
+                    "test.世界.com",
+                    "/foo",
+                    null,
+                    null,
+                    "http://test.%E4%B8%96%E7%95%8C.com/foo"
+            ),
+            // Lowercase escape hex digits
+            new URLTestCase(
+                    "http://TEST.%e4%b8%96%e7%95%8c.com/foo",
+                    "http",
+                    null,
+                    null,
+                    "test.世界.com",
+                    "/foo",
+                    null,
+                    null,
+                    "http://test.%E4%B8%96%E7%95%8C.com/foo"
+            ),
             // TODO: handle absolute and relative references
             // TODO: handle path resolving
     };

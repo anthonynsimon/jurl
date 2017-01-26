@@ -3,6 +3,13 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+
 sourceCompatibility = 1.7
 
 repositories {
@@ -13,11 +20,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
 tasks.withType(Test) {
+    systemProperty "file.encoding", 'UTF-8'
     testLogging {
         // set options for log level LIFECYCLE
         events "passed", "skipped", "failed", "standardOut"
