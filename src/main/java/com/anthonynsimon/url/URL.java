@@ -4,7 +4,10 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 /**
  * URL is a reference to a web resource. This class implements functionality for parsing and
- * manipulating the various parts that make up a URL. Once parsed it is usually of the form:
+ * manipulating the various parts that make up a URL.
+ *
+ * Once parsed it is of the form:
+ *
  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
 public class URL {
