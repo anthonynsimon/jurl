@@ -272,6 +272,18 @@ public class URLTest {
                     null,
                     "///hello"
             ),
+            // Don't try to resolve path
+            new URLTestCase(
+                    "http://example.com/abc/..",
+                    "http",
+                    null,
+                    null,
+                    "example.com",
+                    "/abc/..",
+                    null,
+                    null,
+                    "http://example.com/abc/.."
+            ),
             // Username and password
             new URLTestCase(
                     "https://user:password@example.com",
@@ -676,7 +688,7 @@ public class URLTest {
             new URLReferenceTestCase(
                     "http://www.domain.com/?q=foo",
                     "#section",
-                    "http://www.domain.com#section"
+                    "http://www.domain.com/#section"
             ),
             new URLReferenceTestCase(
                     "http://www.domain.com/bar",
@@ -692,6 +704,11 @@ public class URLTest {
                     "http://www.domain.com/bar?q#y",
                     "/foo?k#z",
                     "http://www.domain.com/foo?k#z"
+            ),
+            new URLReferenceTestCase(
+                    "mailto:user@example.com",
+                    "//example.com",
+                    "mailto://example.com"
             ),
             new URLReferenceTestCase(
                     "http://www.domain.com/bar?q#y",
@@ -766,7 +783,7 @@ public class URLTest {
             new URLReferenceTestCase(
                     "http://[1080::8:800:200C:417A]:9090/foo/",
                     "three",
-                    "http://[1080::8:800:200c:417a]:9090/three"
+                    "http://[1080::8:800:200c:417a]:9090/foo/three"
             ),
             new URLReferenceTestCase(
                     "http://[1080::8:800:200C:417A]:9090/foo/a",
@@ -777,7 +794,7 @@ public class URLTest {
             new URLReferenceTestCase(
                     "http:www.domain.com/",
                     "path",
-                    "/path"
+                    "http:///path"
             ),
             new URLReferenceTestCase(
                     "http://www.domain.com/",
@@ -818,6 +835,257 @@ public class URLTest {
                     "file:///",
                     "pictures",
                     "file:///pictures"
+            ),
+            new URLReferenceTestCase(
+                    "file:///home/user/",
+                    "../here",
+                    "file:///home/here"
+            ),
+            new URLReferenceTestCase(
+                    "file:///home/user/",
+                    "..",
+                    "file:///home/"
+            ),
+            new URLReferenceTestCase(
+                    "file:///home/user/",
+                    ".",
+                    "file:///home/user/"
+            ),
+            new URLReferenceTestCase(
+                    "file:///home/user",
+                    ".",
+                    "file:///home/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/user",
+                    "../../../",
+                    "http://home.com/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/user/test",
+                    "foo/bar/../last",
+                    "http://home.com/user/foo/last"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/user/test",
+                    "foo/bar/../last/..",
+                    "http://home.com/user/foo/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/user/test",
+                    "./..",
+                    "http://home.com/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/user/test",
+                    ".",
+                    "http://home.com/user/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/user/test",
+                    "..",
+                    "http://home.com/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com",
+                    ".",
+                    "http://home.com/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/",
+                    ".",
+                    "http://home.com/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/foo",
+                    ".",
+                    "http://home.com/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/foo/",
+                    ".",
+                    "http://home.com/foo/"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/foo/",
+                    "../../../../bar",
+                    "http://home.com/bar"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/foo/",
+                    "./../../.././../bar",
+                    "http://home.com/bar"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/foo/",
+                    "./../../.././../bar/",
+                    "http://home.com/bar"
+            ),
+            new URLReferenceTestCase(
+                    "http://home.com/foo/bar",
+                    "a/./b/../c/../d/./last/..",
+                    "http://home.com/foo/a/d/"
+            ),
+            // Triple dots do not affect the path
+            new URLReferenceTestCase(
+                    "http://home.com/foo/bar/",
+                    "...",
+                    "http://home.com/foo/bar/..."
+            ),
+            // Triple dots do not affect the path
+            new URLReferenceTestCase(
+                    "http://home.com/foo/bar/",
+                    "/...",
+                    "http://home.com/..."
+            ),
+            // Triple dots do not affect the path
+            new URLReferenceTestCase(
+                    "http://home.com/foo/bar/",
+                    "./...",
+                    "http://home.com/foo/bar/..."
+            ),
+    };
+
+    private PathResolveTestCase[] pathResolveCases = new PathResolveTestCase[]{
+            new PathResolveTestCase(
+                    "",
+                    "",
+                    ""
+            ),
+            new PathResolveTestCase(
+                    "abc",
+                    "",
+                    "/abc"
+            ),
+            new PathResolveTestCase(
+                    "abc",
+                    "456",
+                    "/456"
+            ),
+            new PathResolveTestCase(
+                    "/abc",
+                    "123",
+                    "/123"
+            ),
+            new PathResolveTestCase(
+                    "/abc/abc",
+                    "/123",
+                    "/123"
+            ),
+            new PathResolveTestCase(
+                    "abc/def",
+                    ".",
+                    "/abc/"
+            ),
+            new PathResolveTestCase(
+                    "abc/def",
+                    "123",
+                    "/abc/123"
+            ),
+            new PathResolveTestCase(
+                    "abc/def",
+                    "..",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "abc/",
+                    "..",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "abc/",
+                    "../..",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "abc/def/hij",
+                    "..",
+                    "/abc/"
+            ),
+            new PathResolveTestCase(
+                    "abc/def/hij",
+                    ".",
+                    "/abc/def/"
+            ),
+            new PathResolveTestCase(
+                    "abc/def/hij",
+                    "../123",
+                    "/abc/123"
+            ),
+            new PathResolveTestCase(
+                    "abc/def/hij",
+                    ".././123",
+                    "/abc/123"
+            ),
+            new PathResolveTestCase(
+                    "abc/def/hij",
+                    "../../123",
+                    "/123"
+            ),
+            new PathResolveTestCase(
+                    "abc/def/hij",
+                    "./../123",
+                    "/abc/123"
+            ),
+            new PathResolveTestCase(
+                    "abc/../hij",
+                    "",
+                    "/hij"
+            ),
+            new PathResolveTestCase(
+                    "abc/hij",
+                    "./..",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "abc/./hij",
+                    ".",
+                    "/abc/"
+            ),
+            new PathResolveTestCase(
+                    "abc/./hij",
+                    "",
+                    "/abc/hij"
+            ),
+            new PathResolveTestCase(
+                    "abc/../hij",
+                    "",
+                    "/hij"
+            ),
+            new PathResolveTestCase(
+                    "abc/../hij",
+                    ".",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "",
+                    "../../../././../",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "../../../././../",
+                    "../../../././../",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "../////../.././/./../",
+                    "../../../././../",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "abc",
+                    "////",
+                    "/"
+            ),
+            new PathResolveTestCase(
+                    "/////",
+                    "abc",
+                    "/abc"
+            ),
+            new PathResolveTestCase(
+                    "abc/.././123",
+                    "x",
+                    "/x"
             ),
     };
 
@@ -886,6 +1154,15 @@ public class URLTest {
         }
     }
 
+    @Test
+    public void testResolvePath() throws Exception {
+        for (PathResolveTestCase testCase : pathResolveCases) {
+            URL url = new URL();
+            String resolved = url.resolvePath(testCase.inputBase, testCase.inputReference);
+            assertEquals(testCase.expected, resolved);
+        }
+    }
+
 
     @Test
     public void testEquals() throws Exception {
@@ -931,6 +1208,18 @@ public class URLTest {
             this.inputBase = inputBase;
             this.inputReference = inputReference;
             this.expectedResolvedReference = expectedResolvedReference;
+        }
+    }
+
+    private class PathResolveTestCase {
+        public String inputBase;
+        public String inputReference;
+        public String expected;
+
+        public PathResolveTestCase(String inputBase, String inputReference, String expected) {
+            this.inputBase = inputBase;
+            this.inputReference = inputReference;
+            this.expected = expected;
         }
     }
 

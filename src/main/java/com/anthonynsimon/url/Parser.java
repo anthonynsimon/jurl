@@ -3,9 +3,6 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 class Parser {
-    // TODO: handle absolute and relative references
-    // TODO: handle path resolving
-
     /**
      * Returns a the URL with the new values after parsing the provided URL string.
      */
@@ -90,7 +87,7 @@ class Parser {
                 return remaining;
             } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
                 if (i == 0) {
-                    throw new MalformedURLException("bad scheme format");
+                    return remaining;
                 }
             }
         }

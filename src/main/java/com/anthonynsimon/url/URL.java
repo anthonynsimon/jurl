@@ -4,6 +4,8 @@ import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * URL is a reference to a web resource. This class implements functionality for parsing and
@@ -201,35 +203,81 @@ public class URL implements Serializable {
             throw new InvalidURLReferenceException("reference url is invalid");
         }
 
-        if (isOpaque()) {
-            return target;
-        }
         if (!ref.isAbsolute()) {
             target.scheme = scheme;
         }
-        if (nullOrEmpty(ref.host())) {
-            target.host = host;
+
+        if (!nullOrEmpty(ref.scheme) || !nullOrEmpty(ref.host)) {
+            target.path = resolvePath(ref.path, "");
+            return target;
         }
 
-        // Case for base=http://host.com/one/two and ref=three => http://host.com/one/three
-        if (!nullOrEmpty(ref.path) && !nullOrEmpty(path) && !path.equals("/") && !ref.path.startsWith("/")) {
-            String[] parts = path.split("/");
-            parts[parts.length - 1] = ref.path;
-            StringBuilder sb = new StringBuilder();
-            for (String part : parts) {
-                if (part.isEmpty()) {
-                    continue;
-                }
-                sb.append("/");
-                sb.append(part);
-            }
-            target.path = sb.toString();
+        if (ref.isOpaque()) {
+            return target;
         }
+
+        if (isOpaque()) {
+            return target;
+        }
+
+        target.host = host;
+        target.username = username;
+        target.password = password;
+        target.path = resolvePath(path, ref.path);
 
         return target;
+    }
 
-        // TODO: handle path relative references. i.e. '.' '..' './..' '../../../here'
-        // TODO: handle opaque references and base
+    protected String resolvePath(String base, String ref) {
+        String merged = "";
+
+        if (nullOrEmpty(ref)) {
+            merged = base;
+        } else if (!(ref.charAt(0) == '/') && !nullOrEmpty(base)) {
+            int i = base.lastIndexOf("/");
+            merged = base.substring(0, i + 1) + ref;
+        } else {
+            merged = ref;
+        }
+
+        if (nullOrEmpty(merged)) {
+            return "";
+        }
+
+        String[] parts = merged.split("/", -1);
+        List<String> result = new ArrayList<>();
+
+        for (int i = 0; i < parts.length; i++) {
+            switch (parts[i]) {
+                case "":
+                case ".":
+                    // Ignore
+                    break;
+                case "..":
+                    if (result.size() > 0) {
+                        result.remove(result.size() - 1);
+                    }
+                    break;
+                default:
+                    result.add(parts[i]);
+                    break;
+            }
+        }
+
+        if (parts.length > 0) {
+            // Get last element, if it was '.' or '..' we need
+            // to end in a slash.
+            switch (parts[parts.length - 1]) {
+                case ".":
+                case "..":
+                    // Add an empty last string, it will be turned into
+                    // a slash when joined together.
+                    result.add("");
+                    break;
+            }
+        }
+
+        return "/" + String.join("/", result);
     }
 
 }

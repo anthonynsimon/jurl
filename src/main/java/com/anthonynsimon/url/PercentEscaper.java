@@ -77,6 +77,7 @@ class PercentEscaper {
      * based on the provided EncodeZone.
      */
     public static String escape(String str, URLPart zone) {
+        // TODO: first evaluate if it needs escaping, most parts don't need. This might speed things up.
         byte[] bytes;
         try {
             bytes = str.getBytes("UTF-8");
