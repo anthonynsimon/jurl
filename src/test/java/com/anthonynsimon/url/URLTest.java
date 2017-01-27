@@ -728,6 +728,41 @@ public class URLTest {
                     "//example.com/three",
                     "http://example.com/three"
             ),
+            new URLReferenceTestCase(
+                    "http://192.168.0.1/one",
+                    "http://192.168.0.1/three",
+                    "http://192.168.0.1/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://192.168.0.1/one",
+                    "/three",
+                    "http://192.168.0.1/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://192.168.0.1:44/one",
+                    "/three",
+                    "http://192.168.0.1:44/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://192.168.0.1/one",
+                    "three",
+                    "http://192.168.0.1/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://192.168.0.1",
+                    "three",
+                    "http://192.168.0.1/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://[1080::8:800:200C:417A]/foo",
+                    "three",
+                    "http://[1080::8:800:200c:417a]/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://[1080::8:800:200C:417A]:9090/foo",
+                    "three",
+                    "http://[1080::8:800:200c:417a]:9090/three"
+            ),
     };
 
     @Test
