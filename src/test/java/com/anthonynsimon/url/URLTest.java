@@ -763,6 +763,16 @@ public class URLTest {
                     "three",
                     "http://[1080::8:800:200c:417a]:9090/three"
             ),
+            new URLReferenceTestCase(
+                    "http://[1080::8:800:200C:417A]:9090/foo/",
+                    "three",
+                    "http://[1080::8:800:200c:417a]:9090/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://[1080::8:800:200C:417A]:9090/foo/a",
+                    "three",
+                    "http://[1080::8:800:200c:417a]:9090/foo/three"
+            ),
     };
 
     @Test
