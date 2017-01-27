@@ -5,23 +5,43 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 import java.io.UnsupportedEncodingException;
 
-class EscapeUtils {
+/**
+ * PercentEscaper is a utility class that handles the escaping and unescaping of characters in URLs.
+ * It escapes character based on the context (part of the URL) that is being dealt with.
+ *
+ * Supports UTF-8 escaping and unescaping.
+ */
+class PercentEscaper {
 
-    private static final char[] reservedChars = {'$', '&', '+', ',', '/', ':', ';', '=', '?', '@'};
-    private static final char[] subDelimsChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
+    /**
+     * Reserved characters, allowed in certain parts of the URL. Must be escaped in most cases.
+     */
+    private static final char[] reservedChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
+
+    /**
+     * Unreserved characters do not need to be escaped.
+     */
     private static final char[] unreservedChars = {'-', '_', '.', '~'};
+
+    /**
+     * Byte masks to aid in the decoding of UTF-8 byte arrays.
+     */
     private static final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
 
-    private static boolean shouldEscape(char c, URL.URLPart zone) {
+
+    /**
+     * Returns true if escaping is required based on the character and encode zone provided.
+     */
+    private static boolean shouldEscape(char c, EncodeZone zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
             return false;
         }
 
-        if (zone == URL.URLPart.HOST || zone == URL.URLPart.PATH) {
+        if (zone == EncodeZone.HOST || zone == EncodeZone.PATH) {
             if (c == '%') {
                 return true;
             }
-            for (char reserved : subDelimsChars) {
+            for (char reserved : reservedChars) {
                 if (reserved == c) {
                     return false;
                 }
@@ -52,7 +72,11 @@ class EscapeUtils {
         return true;
     }
 
-    public static String escape(String str, URL.URLPart zone) {
+    /**
+     * Returns a percent-escaped string. Each character will be evaluated in case it needs to be escaped
+     * based on the provided EncodeZone.
+     */
+    public static String escape(String str, EncodeZone zone) {
         byte[] bytes;
         try {
             bytes = str.getBytes("UTF-8");
@@ -86,6 +110,11 @@ class EscapeUtils {
         return result;
     }
 
+    /**
+     * Returns an unescaped string.
+     *
+     * @throws MalformedURLException if an invalid escape sequence is found.
+     */
     public static String unescape(String str) throws MalformedURLException {
         char[] chars = str.toCharArray();
         String result = "";
@@ -129,6 +158,11 @@ class EscapeUtils {
         return result;
     }
 
+    /**
+     * Returns a byte representation of a parsed array of hex chars.
+     *
+     * @throws InvalidHexException if the provided array of hex characters is invalid.
+     */
     private static byte unhex(char[] hex) throws InvalidHexException {
         int result = 0;
         for (int i = 0; i < hex.length; i++) {
@@ -156,5 +190,17 @@ class EscapeUtils {
             exp--;
         }
         return result;
+    }
+
+    /**
+     * EncodeZone is used to distinguish between the parts of the url when encoding/decoding.
+     */
+    protected enum EncodeZone {
+        CREDENTIALS,
+        HOST,
+        PATH,
+        QUERY,
+        FRAGMENT,
+        ENCODE_ZONE,
     }
 }

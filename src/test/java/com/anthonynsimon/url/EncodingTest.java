@@ -45,30 +45,30 @@ public class EncodingTest {
     @Test
     public void testEscaping() throws Exception {
         for (EncodingTestCase testCase : escapeCases) {
-            assertEquals(testCase.expectedOutput, EscapeUtils.escape(testCase.input, URL.URLPart.ENCODE_ZONE));
+            assertEquals(testCase.expectedOutput, PercentEscaper.escape(testCase.input, PercentEscaper.EncodeZone.ENCODE_ZONE));
         }
     }
 
     @Test
     public void testUnescaping() throws Exception {
         for (EncodingTestCase testCase : unescapeCases) {
-            assertEquals(testCase.expectedOutput, EscapeUtils.unescape(testCase.input));
+            assertEquals(testCase.expectedOutput, PercentEscaper.unescape(testCase.input));
         }
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescape() throws Exception {
-        EscapeUtils.unescape("_______%");
+        PercentEscaper.unescape("_______%");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescapeWithUnicodeMultiple() throws Exception {
-        EscapeUtils.unescape("!__!__%Ƿabasda");
+        PercentEscaper.unescape("!__!__%Ƿabasda");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescapeWithUnicodeSingle() throws Exception {
-        EscapeUtils.unescape("!__!__%Ƿ");
+        PercentEscaper.unescape("!__!__%Ƿ");
     }
 
     class EncodingTestCase {

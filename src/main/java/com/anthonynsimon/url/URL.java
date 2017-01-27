@@ -34,6 +34,8 @@ public class URL {
 
     /**
      * Parses all the URL parts from the provided string.
+     *
+     * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private void parseAll(String rawUrl) throws MalformedURLException {
         if (rawUrl == null) {
@@ -88,12 +90,14 @@ public class URL {
         }
 
         if (!remaining.isEmpty()) {
-            path = EscapeUtils.unescape(remaining);
+            path = PercentEscaper.unescape(remaining);
         }
     }
 
     /**
      * Parses the scheme from the provided string.
+     *
+     * * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private String parseScheme(String remaining) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
@@ -118,6 +122,8 @@ public class URL {
 
     /**
      * Parses the authority from the provided string.
+     *
+     * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private void parseAuthority(String authority) throws MalformedURLException {
         int i = authority.lastIndexOf('@');
@@ -125,10 +131,10 @@ public class URL {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                username = EscapeUtils.unescape(parts[0]);
-                password = EscapeUtils.unescape(parts[1]);
+                username = PercentEscaper.unescape(parts[0]);
+                password = PercentEscaper.unescape(parts[1]);
             } else {
-                username = EscapeUtils.unescape(credentials);
+                username = PercentEscaper.unescape(credentials);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -137,6 +143,8 @@ public class URL {
 
     /**
      * Parses the host from the provided string.
+     *
+     * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private void parseHost(String str) throws MalformedURLException {
         if (str.startsWith("[")) {
@@ -161,7 +169,7 @@ public class URL {
                 }
             }
         }
-        String ht = EscapeUtils.unescape(str.toLowerCase());
+        String ht = PercentEscaper.unescape(str.toLowerCase());
         if (!ht.isEmpty()) {
             host = ht;
         }
@@ -170,9 +178,9 @@ public class URL {
     /**
      * Returns true if the provided port string contains a valid port number.
      * Note that an empty string is a valid port number since it's optional.
-     * <p>
+     *
      * For example:
-     * <p>
+     *
      * ''      => TRUE
      * null    => TRUE
      * ':8080' => TRUE
@@ -275,18 +283,18 @@ public class URL {
             if (scheme != null || host != null) {
                 result += "//";
                 if (username != null) {
-                    result += EscapeUtils.escape(username, URLPart.CREDENTIALS);
+                    result += PercentEscaper.escape(username, PercentEscaper.EncodeZone.CREDENTIALS);
                     if (password != null) {
-                        result += ":" + EscapeUtils.escape(password, URLPart.CREDENTIALS);
+                        result += ":" + PercentEscaper.escape(password, PercentEscaper.EncodeZone.CREDENTIALS);
                     }
                     result += "@";
                 }
                 if (host != null) {
-                    result += EscapeUtils.escape(host, URLPart.HOST);
+                    result += PercentEscaper.escape(host, PercentEscaper.EncodeZone.HOST);
                 }
             }
             if (path != null) {
-                result += EscapeUtils.escape(path, URLPart.PATH);
+                result += PercentEscaper.escape(path, PercentEscaper.EncodeZone.PATH);
             }
         }
         if (query != null) {
@@ -306,15 +314,4 @@ public class URL {
         return toString().hashCode();
     }
 
-    /**
-     * URLPart is used to distinguish between the parts of the url when encoding/decoding.
-     */
-    protected enum URLPart {
-        CREDENTIALS,
-        HOST,
-        PATH,
-        QUERY,
-        FRAGMENT,
-        ENCODE_ZONE,
-    }
 }
