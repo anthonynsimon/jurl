@@ -175,27 +175,40 @@ public class URL implements Serializable {
     public URL resolveReference(String ref) throws MalformedURLException, InvalidURLReferenceException {
         URL url = new URL();
         Parser.parse(ref, url);
-        resolveReference(url);
-        return url;
+        return resolveReference(url);
     }
 
     /**
-     * Resolves the reference URL using the instance URL as a base.
+     * Returns the resolved reference URL using the instance URL as a base.
      *
-     * @throws InvalidURLReferenceException if the provided ref URL is invalid.
+     * If the reference URL is absolute, then it simply creates a new URL that is identical to it
+     * and returns it. If the reference and the base URLs are identical, a new instance of the reference is returned.
+     *
+     * @throws InvalidURLReferenceException if the provided ref URL is invalid or if the base URL is not absolute.
      */
-    public void resolveReference(URL ref) throws InvalidURLReferenceException {
+    public URL resolveReference(URL ref) throws InvalidURLReferenceException {
         if (!isAbsolute()) {
             throw new InvalidURLReferenceException("base url is not absolute");
         }
         if (ref == null) {
             throw new InvalidURLReferenceException("reference url is null");
         }
+
+        URL target;
+        try {
+            target = URL.parse(ref.toString());
+        } catch (MalformedURLException e) {
+            throw new InvalidURLReferenceException("reference url is invalid");
+        }
+
+        if (isOpaque()) {
+            return target;
+        }
         if (!ref.isAbsolute()) {
-            ref.scheme = scheme;
+            target.scheme = scheme;
         }
         if (nullOrEmpty(ref.host())) {
-            ref.host = host;
+            target.host = host;
         }
 
         // Case for base=http://host.com/one/two and ref=three => http://host.com/one/three
@@ -210,8 +223,10 @@ public class URL implements Serializable {
                 sb.append("/");
                 sb.append(part);
             }
-            ref.path = sb.toString();
+            target.path = sb.toString();
         }
+
+        return target;
 
         // TODO: handle path relative references. i.e. '.' '..' './..' '../../../here'
         // TODO: handle opaque references and base

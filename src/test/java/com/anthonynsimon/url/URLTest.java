@@ -773,6 +773,52 @@ public class URLTest {
                     "three",
                     "http://[1080::8:800:200c:417a]:9090/foo/three"
             ),
+            // Opaque base
+            new URLReferenceTestCase(
+                    "http:www.domain.com/",
+                    "path",
+                    "/path"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/",
+                    "mailto:user@domain.com",
+                    "mailto:user@domain.com"
+            ),
+            new URLReferenceTestCase(
+                    "mailto:user@domain.com",
+                    "mailto:another@test.de",
+                    "mailto:another@test.de"
+            ),
+            new URLReferenceTestCase(
+                    "file://",
+                    "/documents",
+                    "file:///documents"
+            ),
+            new URLReferenceTestCase(
+                    "file:///",
+                    "/documents",
+                    "file:///documents"
+            ),
+            new URLReferenceTestCase(
+                    "file:///home",
+                    "/documents",
+                    "file:///documents"
+            ),
+            new URLReferenceTestCase(
+                    "file:///user/documents",
+                    "pictures",
+                    "file:///user/pictures"
+            ),
+            new URLReferenceTestCase(
+                    "file:///user/documents/one",
+                    "pictures",
+                    "file:///user/documents/pictures"
+            ),
+            new URLReferenceTestCase(
+                    "file:///",
+                    "pictures",
+                    "file:///pictures"
+            ),
     };
 
     @Test
@@ -832,11 +878,11 @@ public class URLTest {
             URL base = URL.parse(testCase.inputBase);
             URL urlRef = URL.parse(testCase.inputReference);
 
-            base.resolveReference(urlRef);
-            URL stringRef = base.resolveReference(testCase.inputReference);
+            URL resolvedUrlRef = base.resolveReference(urlRef);
+            URL resolvedStringRef = base.resolveReference(testCase.inputReference);
 
-            assertEquals(testCase.expectedResolvedReference, urlRef.toString());
-            assertEquals(testCase.expectedResolvedReference, stringRef.toString());
+            assertEquals(testCase.expectedResolvedReference, resolvedUrlRef.toString());
+            assertEquals(testCase.expectedResolvedReference, resolvedStringRef.toString());
         }
     }
 
