@@ -3,6 +3,8 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
+import java.io.Serializable;
+
 /**
  * URL is a reference to a web resource. This class implements functionality for parsing and
  * manipulating the various parts that make up a URL.
@@ -11,7 +13,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
  *
  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
-public class URL {
+public class URL implements Serializable {
     // TODO: add support to build an URL manually
     // TODO: add support to parse query string
 
