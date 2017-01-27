@@ -32,12 +32,12 @@ class PercentEscaper {
     /**
      * Returns true if escaping is required based on the character and encode zone provided.
      */
-    private static boolean shouldEscape(char c, EncodeZone zone) {
+    private static boolean shouldEscape(char c, URLPart zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
             return false;
         }
 
-        if (zone == EncodeZone.HOST || zone == EncodeZone.PATH) {
+        if (zone == URLPart.HOST || zone == URLPart.PATH) {
             if (c == '%') {
                 return true;
             }
@@ -76,7 +76,7 @@ class PercentEscaper {
      * Returns a percent-escaped string. Each character will be evaluated in case it needs to be escaped
      * based on the provided EncodeZone.
      */
-    public static String escape(String str, EncodeZone zone) {
+    public static String escape(String str, URLPart zone) {
         byte[] bytes;
         try {
             bytes = str.getBytes("UTF-8");
@@ -192,15 +192,4 @@ class PercentEscaper {
         return result;
     }
 
-    /**
-     * EncodeZone is used to distinguish between the parts of the url when encoding/decoding.
-     */
-    protected enum EncodeZone {
-        CREDENTIALS,
-        HOST,
-        PATH,
-        QUERY,
-        FRAGMENT,
-        ENCODE_ZONE,
-    }
 }

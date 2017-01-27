@@ -110,18 +110,18 @@ public class URL {
             if (notNullNotEmpty(scheme) || notNullNotEmpty(host)) {
                 result += "//";
                 if (notNullNotEmpty(username)) {
-                    result += PercentEscaper.escape(username, PercentEscaper.EncodeZone.CREDENTIALS);
+                    result += PercentEscaper.escape(username, URLPart.CREDENTIALS);
                     if (notNullNotEmpty(password)) {
-                        result += ":" + PercentEscaper.escape(password, PercentEscaper.EncodeZone.CREDENTIALS);
+                        result += ":" + PercentEscaper.escape(password, URLPart.CREDENTIALS);
                     }
                     result += "@";
                 }
                 if (notNullNotEmpty(host)) {
-                    result += PercentEscaper.escape(host, PercentEscaper.EncodeZone.HOST);
+                    result += PercentEscaper.escape(host, URLPart.HOST);
                 }
             }
             if (notNullNotEmpty(path)) {
-                result += PercentEscaper.escape(path, PercentEscaper.EncodeZone.PATH);
+                result += PercentEscaper.escape(path, URLPart.PATH);
             }
         }
         if (notNullNotEmpty(query)) {

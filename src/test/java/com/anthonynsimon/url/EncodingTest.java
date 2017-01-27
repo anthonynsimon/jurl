@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class EncodingTest {
-
+    
     private EncodingTestCase[] escapeCases = new EncodingTestCase[]{
             new EncodingTestCase("", ""),
             new EncodingTestCase("onetwothree", "onetwothree"),
@@ -45,7 +45,7 @@ public class EncodingTest {
     @Test
     public void testEscaping() throws Exception {
         for (EncodingTestCase testCase : escapeCases) {
-            assertEquals(testCase.expectedOutput, PercentEscaper.escape(testCase.input, PercentEscaper.EncodeZone.ENCODE_ZONE));
+            assertEquals(testCase.expectedOutput, PercentEscaper.escape(testCase.input, URLPart.ENCODE_ZONE));
         }
     }
 

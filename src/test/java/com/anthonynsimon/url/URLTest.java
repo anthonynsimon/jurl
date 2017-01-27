@@ -44,6 +44,30 @@ public class URLTest {
                     null,
                     "http://www.example.com/path%20one%20two&three"
             ),
+            // Non - ASCII
+            new URLTestCase(
+                    "http://test.ü€€€€€𡺸.com/foo",
+                    "http",
+                    null,
+                    null,
+                    "test.ü€€€€€𡺸.com",
+                    "/foo",
+                    null,
+                    null,
+                    "http://test.%C3%BC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%F0%A1%BA%B8.com/foo"
+            ),
+            // Non-ASCII
+            new URLTestCase(
+                    "http://test.%C3%BC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%F0%A1%BA%B8.com/foo",
+                    "http",
+                    null,
+                    null,
+                    "test.ü€€€€€𡺸.com",
+                    "/foo",
+                    null,
+                    null,
+                    "http://test.%C3%BC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%E2%82%AC%F0%A1%BA%B8.com/foo"
+            ),
             // Username
             new URLTestCase(
                     "ftp://me@www.example.com/",
@@ -618,30 +642,6 @@ public class URLTest {
                     null,
                     null,
                     "http://test.com//foo"
-            ),
-//            Non - ASCII
-            new URLTestCase(
-                    "http://test.世界.com/foo",
-                    "http",
-                    null,
-                    null,
-                    "test.世界.com",
-                    "/foo",
-                    null,
-                    null,
-                    "http://test.%E4%B8%96%E7%95%8C.com/foo"
-            ),
-            // Non-ASCII
-            new URLTestCase(
-                    "http://test.%E4%B8%96%E7%95%8C.com/foo",
-                    "http",
-                    null,
-                    null,
-                    "test.世界.com",
-                    "/foo",
-                    null,
-                    null,
-                    "http://test.%E4%B8%96%E7%95%8C.com/foo"
             ),
             // Lowercase escape hex digits
             new URLTestCase(
