@@ -14,194 +14,21 @@ public class URL {
     // TODO: handle absolute and relative references
     // TODO: handle path resolving
 
-    private String scheme;
-    private String username;
-    private String password;
-    private String host;
-    private String path;
-    private String query;
-    private String fragment;
-    private String opaque;
+    protected String scheme;
+    protected String username;
+    protected String password;
+    protected String host;
+    protected String path;
+    protected String query;
+    protected String fragment;
+    protected String opaque;
 
     /**
      * Returns a new URL object after parsing the provided URL string.
      */
     public static URL parse(String url) throws MalformedURLException {
         URL u = new URL();
-        u.parseAll(url);
-        return u;
-    }
-
-    /**
-     * Parses all the URL parts from the provided string.
-     *
-     * @throws MalformedURLException if there was a problem parsing the input string.
-     */
-    private void parseAll(String rawUrl) throws MalformedURLException {
-        if (rawUrl == null) {
-            throw new MalformedURLException("url is empty");
-        }
-
-        String remaining = rawUrl;
-
-        int index = remaining.lastIndexOf("#");
-        if (index > 0) {
-            String frag = remaining.substring(index + 1, remaining.length());
-            fragment = frag.isEmpty() ? null : frag;
-            remaining = remaining.substring(0, index);
-        }
-
-        if (remaining.isEmpty()) {
-            throw new MalformedURLException("invalid url");
-        }
-
-        if (remaining.equals("*")) {
-            path = "*";
-            return;
-        }
-
-        index = remaining.indexOf("?");
-        if (index > 0) {
-            String qr = remaining.substring(index + 1, remaining.length());
-            if (!qr.isEmpty()) {
-                query = qr;
-            }
-            remaining = remaining.substring(0, index);
-        }
-
-        remaining = parseScheme(remaining);
-
-        if (scheme != null && !scheme.isEmpty()) {
-            if (!remaining.startsWith("/")) {
-                opaque = remaining;
-                return;
-            }
-        }
-        if (((scheme != null && !scheme.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
-            remaining = remaining.substring(2, remaining.length());
-            int i = remaining.indexOf("/");
-            if (i >= 0) {
-                parseAuthority(remaining.substring(0, i));
-                remaining = remaining.substring(i, remaining.length());
-            } else {
-                parseAuthority(remaining);
-                remaining = "";
-            }
-        }
-
-        if (!remaining.isEmpty()) {
-            path = PercentEscaper.unescape(remaining);
-        }
-    }
-
-    /**
-     * Parses the scheme from the provided string.
-     *
-     * * @throws MalformedURLException if there was a problem parsing the input string.
-     */
-    private String parseScheme(String remaining) throws MalformedURLException {
-        for (int i = 0; i < remaining.length(); i++) {
-            char c = remaining.charAt(i);
-            if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
-                continue;
-            } else if (c == ':') {
-                if (i == 0) {
-                    throw new MalformedURLException("missing scheme");
-                }
-                scheme = remaining.substring(0, i).toLowerCase();
-                remaining = remaining.substring(i + 1, remaining.length());
-                return remaining;
-            } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
-                if (i == 0) {
-                    throw new MalformedURLException("bad scheme format");
-                }
-            }
-        }
-        return remaining;
-    }
-
-    /**
-     * Parses the authority from the provided string.
-     *
-     * @throws MalformedURLException if there was a problem parsing the input string.
-     */
-    private void parseAuthority(String authority) throws MalformedURLException {
-        int i = authority.lastIndexOf('@');
-        if (i >= 0) {
-            String credentials = authority.substring(0, i);
-            if (credentials.contains(":")) {
-                String[] parts = credentials.split(":", 2);
-                username = PercentEscaper.unescape(parts[0]);
-                password = PercentEscaper.unescape(parts[1]);
-            } else {
-                username = PercentEscaper.unescape(credentials);
-            }
-            authority = authority.substring(i + 1, authority.length());
-        }
-        parseHost(authority);
-    }
-
-    /**
-     * Parses the host from the provided string.
-     *
-     * @throws MalformedURLException if there was a problem parsing the input string.
-     */
-    private void parseHost(String str) throws MalformedURLException {
-        if (str.startsWith("[")) {
-            int i = str.lastIndexOf("]");
-            if (i < 0) {
-                throw new MalformedURLException("IPv6 detected, but missing closing ']' token");
-            }
-            String portPart = str.substring(i + 1, str.length());
-            if (!isPortValid(portPart)) {
-                throw new MalformedURLException("invalid port");
-            }
-        } else {
-            String[] parts = str.split(":", -1);
-            if (parts.length > 2) {
-                throw new MalformedURLException("invalid host: " + parts.toString());
-            }
-            if (parts.length == 2) {
-                try {
-                    Integer.valueOf(parts[1]);
-                } catch (NumberFormatException e) {
-                    throw new MalformedURLException("invalid port");
-                }
-            }
-        }
-        String ht = PercentEscaper.unescape(str.toLowerCase());
-        if (!ht.isEmpty()) {
-            host = ht;
-        }
-    }
-
-    /**
-     * Returns true if the provided port string contains a valid port number.
-     * Note that an empty string is a valid port number since it's optional.
-     *
-     * For example:
-     *
-     * ''      => TRUE
-     * null    => TRUE
-     * ':8080' => TRUE
-     * ':ab80' => FALSE
-     * ':abc'  => FALSE
-     */
-    private boolean isPortValid(String portStr) {
-        if (portStr == null || portStr.isEmpty()) {
-            return true;
-        }
-        int i = portStr.indexOf(":");
-        if (i < 0) {
-            return false;
-        }
-        portStr = portStr.substring(i + 1, portStr.length());
-        try {
-            Integer.valueOf(portStr);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
+        return Parser.parse(url, u);
     }
 
     /**
@@ -274,33 +101,33 @@ public class URL {
     @Override
     public String toString() {
         String result = "";
-        if (scheme != null && !scheme.isEmpty()) {
+        if (notNullNotEmpty(scheme)) {
             result += scheme + ":";
         }
-        if (opaque != null) {
+        if (notNullNotEmpty(opaque)) {
             result += opaque;
         } else {
-            if (scheme != null || host != null) {
+            if (notNullNotEmpty(scheme) || notNullNotEmpty(host)) {
                 result += "//";
-                if (username != null) {
+                if (notNullNotEmpty(username)) {
                     result += PercentEscaper.escape(username, PercentEscaper.EncodeZone.CREDENTIALS);
-                    if (password != null) {
+                    if (notNullNotEmpty(password)) {
                         result += ":" + PercentEscaper.escape(password, PercentEscaper.EncodeZone.CREDENTIALS);
                     }
                     result += "@";
                 }
-                if (host != null) {
+                if (notNullNotEmpty(host)) {
                     result += PercentEscaper.escape(host, PercentEscaper.EncodeZone.HOST);
                 }
             }
-            if (path != null) {
+            if (notNullNotEmpty(path)) {
                 result += PercentEscaper.escape(path, PercentEscaper.EncodeZone.PATH);
             }
         }
-        if (query != null) {
+        if (notNullNotEmpty(query)) {
             result += "?" + query;
         }
-        if (fragment != null) {
+        if (notNullNotEmpty(fragment)) {
             result += "#" + fragment;
         }
         return result;
@@ -312,6 +139,13 @@ public class URL {
     @Override
     public int hashCode() {
         return toString().hashCode();
+    }
+
+    /**
+     * Returns true if the parameter string is neither null nor empty ("").
+     */
+    private boolean notNullNotEmpty(String str) {
+        return str != null && !str.isEmpty();
     }
 
 }
