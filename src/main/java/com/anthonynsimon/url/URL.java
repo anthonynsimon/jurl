@@ -148,4 +148,8 @@ public class URL {
         return str != null && !str.isEmpty();
     }
 
+    public boolean isAbsolute() {
+        return notNullNotEmpty(scheme);
+    }
+
 }

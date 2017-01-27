@@ -693,6 +693,21 @@ public class URLTest {
         URL url = URL.parse("http://e34::1");
     }
 
+    @Test
+    public void testAbsoluteURLs() throws Exception {
+        assertTrue(URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section").isAbsolute());
+        assertTrue(URL.parse("http://domain.com").isAbsolute());
+        assertTrue(URL.parse("http://www.domain.com?key=value").isAbsolute());
+        assertTrue(URL.parse("http://192.168.0.1/path/to/RESOURCE.html?q=abc#section").isAbsolute());
+        assertTrue(URL.parse("http://192.168.0.1").isAbsolute());
+        assertTrue(URL.parse("file:///home/user").isAbsolute());
+
+        assertFalse(URL.parse("///home/user").isAbsolute());
+        assertFalse(URL.parse("/home/user").isAbsolute());
+        assertFalse(URL.parse("home/user").isAbsolute());
+        assertFalse(URL.parse("home").isAbsolute());
+    }
+
 
     @Test
     public void testEquals() throws Exception {
