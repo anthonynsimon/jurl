@@ -390,7 +390,7 @@ public class URLTest {
                     "abc/123/xyz",
                     null,
                     null,
-                    "abc/123/xyz"
+                    "/abc/123/xyz"
             ),
             // Escaped ? in credentials
             new URLTestCase(
@@ -657,6 +657,79 @@ public class URLTest {
             ),
     };
 
+    private URLReferenceTestCase[] resolveReferenceCases = new URLReferenceTestCase[]{
+            new URLReferenceTestCase(
+                    "http://www.domain.com/path/to/RESOURCE.html",
+                    "http://www.domain.com/path/to/ANOTHER_RESOURCE.html?q=abc#section",
+                    "http://www.domain.com/path/to/ANOTHER_RESOURCE.html?q=abc#section"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/path/to/RESOURCE.html",
+                    "/path/to/ANOTHER_RESOURCE.html?q=abc#section",
+                    "http://www.domain.com/path/to/ANOTHER_RESOURCE.html?q=abc#section"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/?q=foo",
+                    "/path?q=abc#section",
+                    "http://www.domain.com/path?q=abc#section"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/?q=foo",
+                    "#section",
+                    "http://www.domain.com#section"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/bar",
+                    "/foo",
+                    "http://www.domain.com/foo"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/bar?q#y",
+                    "/foo",
+                    "http://www.domain.com/foo"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/bar?q#y",
+                    "/foo?k#z",
+                    "http://www.domain.com/foo?k#z"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/bar?q#y",
+                    "//example.com",
+                    "http://example.com"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com",
+                    "/path",
+                    "http://www.domain.com/path"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com",
+                    "home",
+                    "http://www.domain.com/home"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/",
+                    "path",
+                    "http://www.domain.com/path"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/here/there",
+                    "/here/there/that",
+                    "http://www.domain.com/here/there/that"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/one/two",
+                    "three",
+                    "http://www.domain.com/one/three"
+            ),
+            new URLReferenceTestCase(
+                    "http://www.domain.com/one/two",
+                    "//example.com/three",
+                    "http://example.com/three"
+            ),
+    };
+
     @Test
     public void testUrls() throws Exception {
         for (URLTestCase testCase : urlTestCases) {
@@ -708,6 +781,20 @@ public class URLTest {
         assertFalse(URL.parse("home").isAbsolute());
     }
 
+    @Test
+    public void testResolveReferences() throws Exception {
+        for (URLReferenceTestCase testCase : resolveReferenceCases) {
+            URL base = URL.parse(testCase.inputBase);
+            URL urlRef = URL.parse(testCase.inputReference);
+
+            base.resolveReference(urlRef);
+            URL stringRef = base.resolveReference(testCase.inputReference);
+
+            assertEquals(testCase.expectedResolvedReference, urlRef.toString());
+            assertEquals(testCase.expectedResolvedReference, stringRef.toString());
+        }
+    }
+
 
     @Test
     public void testEquals() throws Exception {
@@ -742,6 +829,18 @@ public class URLTest {
         urlA = URL.parse("http://www.domain.com/path/to/ANOTHER.html?q=abc");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         assertFalse(urlA.equals(urlB));
+    }
+
+    private class URLReferenceTestCase {
+        public String inputBase;
+        public String inputReference;
+        public String expectedResolvedReference;
+
+        public URLReferenceTestCase(String inputBase, String inputReference, String expectedResolvedReference) {
+            this.inputBase = inputBase;
+            this.inputReference = inputReference;
+            this.expectedResolvedReference = expectedResolvedReference;
+        }
     }
 
     private class URLTestCase {

@@ -20,7 +20,7 @@ class Parser {
         String remaining = rawUrl;
 
         int index = remaining.lastIndexOf("#");
-        if (index > 0) {
+        if (index >= 0) {
             String frag = remaining.substring(index + 1, remaining.length());
             target.fragment = frag.isEmpty() ? null : frag;
             remaining = remaining.substring(0, index);

@@ -1,5 +1,6 @@
 package com.anthonynsimon.url;
 
+import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 /**
@@ -100,37 +101,44 @@ public class URL {
      */
     @Override
     public String toString() {
-        String result = "";
+        StringBuffer sb = new StringBuffer();
         if (!nullOrEmpty(scheme)) {
-            result += scheme + ":";
+            sb.append(scheme);
+            sb.append(":");
         }
         if (!nullOrEmpty(opaque)) {
-            result += opaque;
+            sb.append(opaque);
         } else {
             if (!nullOrEmpty(scheme) || !nullOrEmpty(host)) {
-                result += "//";
+                sb.append("//");
                 if (!nullOrEmpty(username)) {
-                    result += PercentEscaper.escape(username, URLPart.CREDENTIALS);
+                    sb.append(PercentEscaper.escape(username, URLPart.CREDENTIALS));
                     if (!nullOrEmpty(password)) {
-                        result += ":" + PercentEscaper.escape(password, URLPart.CREDENTIALS);
+                        sb.append(":");
+                        sb.append(PercentEscaper.escape(password, URLPart.CREDENTIALS));
                     }
-                    result += "@";
+                    sb.append("@");
                 }
                 if (!nullOrEmpty(host)) {
-                    result += PercentEscaper.escape(host, URLPart.HOST);
+                    sb.append(PercentEscaper.escape(host, URLPart.HOST));
                 }
             }
             if (!nullOrEmpty(path)) {
-                result += PercentEscaper.escape(path, URLPart.PATH);
+                if (!path.startsWith("/")) {
+                    sb.append("/");
+                }
+                sb.append(PercentEscaper.escape(path, URLPart.PATH));
             }
         }
         if (!nullOrEmpty(query)) {
-            result += "?" + query;
+            sb.append("?");
+            sb.append(query);
         }
         if (!nullOrEmpty(fragment)) {
-            result += "#" + fragment;
+            sb.append("#");
+            sb.append(fragment);
         }
-        return result;
+        return sb.toString();
     }
 
     /**
@@ -160,6 +168,51 @@ public class URL {
      */
     public boolean isAbsolute() {
         return !nullOrEmpty(scheme);
+    }
+
+    public URL resolveReference(String ref) throws MalformedURLException, InvalidURLReferenceException {
+        URL url = new URL();
+        Parser.parse(ref, url);
+        resolveReference(url);
+        return url;
+    }
+
+    /**
+     * Resolves the reference URL using the instance URL as a base.
+     *
+     * @throws InvalidURLReferenceException if the provided ref URL is invalid.
+     */
+    public void resolveReference(URL ref) throws InvalidURLReferenceException {
+        if (!isAbsolute()) {
+            throw new InvalidURLReferenceException("base url is not absolute");
+        }
+        if (ref == null) {
+            throw new InvalidURLReferenceException("reference url is null");
+        }
+        if (!ref.isAbsolute()) {
+            ref.scheme = scheme;
+        }
+        if (nullOrEmpty(ref.host())) {
+            ref.host = host;
+        }
+
+        // Case for base=http://host.com/one/two and ref=three => http://host.com/one/three
+        if (!nullOrEmpty(ref.path) && !nullOrEmpty(path) && !path.equals("/") && !ref.path.startsWith("/")) {
+            String[] parts = path.split("/");
+            parts[parts.length - 1] = ref.path;
+            StringBuilder sb = new StringBuilder();
+            for (String part : parts) {
+                if (part.isEmpty()) {
+                    continue;
+                }
+                sb.append("/");
+                sb.append(part);
+            }
+            ref.path = sb.toString();
+        }
+
+        // TODO: handle path relative references. i.e. '.' '..' './..' '../../../here'
+        // TODO: handle opaque references and base
     }
 
 }
