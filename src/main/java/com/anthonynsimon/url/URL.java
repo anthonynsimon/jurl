@@ -12,8 +12,8 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
 public class URL {
-    // TODO: handle absolute and relative references
-    // TODO: handle path resolving
+    // TODO: add support to build an URL manually
+    // TODO: add support to parse query string
 
     protected String scheme;
     protected String username;
