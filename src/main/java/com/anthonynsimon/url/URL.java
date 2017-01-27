@@ -101,33 +101,33 @@ public class URL {
     @Override
     public String toString() {
         String result = "";
-        if (notNullNotEmpty(scheme)) {
+        if (!nullOrEmpty(scheme)) {
             result += scheme + ":";
         }
-        if (notNullNotEmpty(opaque)) {
+        if (!nullOrEmpty(opaque)) {
             result += opaque;
         } else {
-            if (notNullNotEmpty(scheme) || notNullNotEmpty(host)) {
+            if (!nullOrEmpty(scheme) || !nullOrEmpty(host)) {
                 result += "//";
-                if (notNullNotEmpty(username)) {
+                if (!nullOrEmpty(username)) {
                     result += PercentEscaper.escape(username, URLPart.CREDENTIALS);
-                    if (notNullNotEmpty(password)) {
+                    if (!nullOrEmpty(password)) {
                         result += ":" + PercentEscaper.escape(password, URLPart.CREDENTIALS);
                     }
                     result += "@";
                 }
-                if (notNullNotEmpty(host)) {
+                if (!nullOrEmpty(host)) {
                     result += PercentEscaper.escape(host, URLPart.HOST);
                 }
             }
-            if (notNullNotEmpty(path)) {
+            if (!nullOrEmpty(path)) {
                 result += PercentEscaper.escape(path, URLPart.PATH);
             }
         }
-        if (notNullNotEmpty(query)) {
+        if (!nullOrEmpty(query)) {
             result += "?" + query;
         }
-        if (notNullNotEmpty(fragment)) {
+        if (!nullOrEmpty(fragment)) {
             result += "#" + fragment;
         }
         return result;
@@ -144,12 +144,22 @@ public class URL {
     /**
      * Returns true if the parameter string is neither null nor empty ("").
      */
-    private boolean notNullNotEmpty(String str) {
-        return str != null && !str.isEmpty();
+    private boolean nullOrEmpty(String str) {
+        return str == null || str.isEmpty();
     }
 
+    /**
+     * Returns true if URL is opaque.
+     */
+    public boolean isOpaque() {
+        return !nullOrEmpty(opaque);
+    }
+
+    /**
+     * Returns true if URL is absolute.
+     */
     public boolean isAbsolute() {
-        return notNullNotEmpty(scheme);
+        return !nullOrEmpty(scheme);
     }
 
 }
