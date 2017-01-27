@@ -10,8 +10,8 @@ Fast and simple URL parsing for Java with IPv6 support.
 - Supports IPv4 and IPv6 with zone identifiers.
 - No dependencies.
 
-## Documentation
-See http://anthonynsimon.com/javadocs/jurl/ for the most recent docs.
+## Getting Started
+TODO: describe how to use and show examples
 
 ## Issues
 
