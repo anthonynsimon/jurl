@@ -14,12 +14,15 @@ import java.util.Map;
 /**
  * URL is a reference to a web resource. This class implements functionality for parsing and
  * manipulating the various parts that make up a URL.
- *
+ * <p>
  * Once parsed it is of the form:
- *
+ * <p>
  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
 public class URL implements Serializable {
+
+    static final long serialVersionUID = 80443L;
+
 
     protected String scheme;
     protected String username;
@@ -227,7 +230,7 @@ public class URL implements Serializable {
 
     /**
      * Returns the resolved reference URL using the instance URL as a base.
-     *
+     * <p>
      * If the reference URL is absolute, then it simply creates a new URL that is identical to it
      * and returns it. If the reference and the base URLs are identical, a new instance of the reference is returned.
      *
