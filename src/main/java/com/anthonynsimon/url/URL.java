@@ -31,6 +31,10 @@ public class URL implements Serializable {
     protected String opaque;
     protected Map<String, String> parsedQueryPairs;
 
+    protected URL() {
+
+    }
+
     /**
      * Returns a new URL object after parsing the provided URL string.
      */
@@ -139,7 +143,6 @@ public class URL implements Serializable {
         if (!(other instanceof URL)) {
             return false;
         }
-        URL otherURL = (URL) other;
         return toString().equals(other.toString());
     }
 

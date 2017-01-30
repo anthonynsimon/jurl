@@ -1,5 +1,6 @@
 package com.anthonynsimon.url;
 
+import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 import org.junit.Test;
 
@@ -1295,6 +1296,24 @@ public class URLTest {
         URL url = URL.parse("http://[::1]:");
     }
 
+    @Test
+    public void testCachedQueryPairs() throws MalformedURLException {
+        URL url = URL.parse("http://example.com?one=uno&two=dos&three");
+        Map<String, String> expected = new HashMap<String, String>() {{
+            put("one", "uno");
+            put("two", "dos");
+        }};
+
+        Map<String, String> first = url.getQueryPairs();
+        // Second time, it should come from a cached value
+        Map<String, String> second = url.getQueryPairs();
+
+        // Test expected values
+        assertEquals(expected, first);
+
+        // Test referential equality
+        assertTrue(first == second);
+    }
 
     @Test
     public void testIsPortValid() throws MalformedURLException {
@@ -1359,6 +1378,35 @@ public class URLTest {
         }
     }
 
+    @Test
+    public void testHashCode() throws Exception {
+        URL urlA = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        URL urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
+        assertTrue(urlA.hashCode() == urlB.hashCode());
+
+        urlA = URL.parse("http://www.domain.com");
+        urlB = URL.parse("http://www.domain.com/");
+        assertFalse(urlA.hashCode() == urlB.hashCode());
+
+        urlA = URL.parse("http://www.domain.com");
+        urlB = URL.parse("http://www.domain.de");
+        assertFalse(urlA.hashCode() == urlB.hashCode());
+    }
+
+    @Test(expected = InvalidURLReferenceException.class)
+    public void testInvalidResolveNotAbsoluteBase() throws Exception {
+        URL base = URL.parse("/path/to/RESOURCE.html");
+        URL ref = URL.parse("http://www.domain.com/path/to/ANOTHER_RESOURCE.html?q=abc#section");
+        base.resolveReference(ref);
+    }
+
+    @Test(expected = InvalidURLReferenceException.class)
+    public void testInvalidResolveNullRef() throws Exception {
+        URL base = URL.parse("http://www.domain.com/path");
+        URL ref = null;
+        base.resolveReference(ref);
+    }
+
 
     @Test
     public void testEquals() throws Exception {
@@ -1393,6 +1441,13 @@ public class URLTest {
         urlA = URL.parse("http://www.domain.com/path/to/ANOTHER.html?q=abc");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         assertFalse(urlA.equals(urlB));
+
+        assertFalse(urlA.equals(null));
+        assertFalse(urlA.equals("http://www.domain.com/path/to/ANOTHER.html?q=abc"));
+        assertFalse(urlA.equals(123));
+
+        urlA = URL.parse("8080");
+        assertFalse(urlA.equals(8080));
     }
 
     private class URLReferenceTestCase {
