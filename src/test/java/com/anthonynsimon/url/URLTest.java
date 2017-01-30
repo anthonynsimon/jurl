@@ -3,6 +3,9 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.Assert.*;
 
 public class URLTest {
@@ -1089,6 +1092,93 @@ public class URLTest {
             ),
     };
 
+    private QueryStringTestCase[] queryStringCases = new QueryStringTestCase[]{
+            new QueryStringTestCase(
+                    "http://example.com",
+                    new HashMap<String, String>()
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?",
+                    new HashMap<String, String>()
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?key=value",
+                    new HashMap<String, String>() {{
+                        put("key", "value");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?key=",
+                    new HashMap<String, String>()
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&three=",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&three",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&=",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&===",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&===&three=tres",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                        put("three", "tres");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&===&&=&&three=tres",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                        put("three", "tres");
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&===&&=&&three=tres#fragment=hello",
+                    new HashMap<String, String>() {{
+                        put("one", "uno");
+                        put("two", "dos");
+                        put("three", "tres");
+                    }}
+            ),
+    };
+
     @Test
     public void testUrls() throws Exception {
         for (URLTestCase testCase : urlTestCases) {
@@ -1101,6 +1191,15 @@ public class URLTest {
             assertEquals(testCase.expectedQuery, url.query());
             assertEquals(testCase.expectedFragment, url.fragment());
             assertEquals(testCase.expectedStringRepr, url.toString());
+        }
+    }
+
+
+    @Test
+    public void testQueryStringValues() throws Exception {
+        for (QueryStringTestCase testCase : queryStringCases) {
+            URL url = URL.parse(testCase.input);
+            assertEquals(testCase.expected, url.queryPairs());
         }
     }
 
@@ -1244,6 +1343,16 @@ public class URLTest {
             this.expectedQuery = expectedQuery;
             this.expectedFragment = expectedFragment;
             this.expectedStringRepr = expectedStringRepr;
+        }
+    }
+
+    private class QueryStringTestCase {
+        public String input;
+        public Map<String, String> expected;
+
+        public QueryStringTestCase(String input, Map<String, String> expected) {
+            this.input = input;
+            this.expected = expected;
         }
     }
 }

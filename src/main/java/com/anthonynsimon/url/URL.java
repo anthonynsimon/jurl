@@ -5,7 +5,9 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * URL is a reference to a web resource. This class implements functionality for parsing and
@@ -17,7 +19,6 @@ import java.util.List;
  */
 public class URL implements Serializable {
     // TODO: add support to build an URL manually
-    // TODO: add support to parse query string
 
     protected String scheme;
     protected String username;
@@ -27,6 +28,7 @@ public class URL implements Serializable {
     protected String query;
     protected String fragment;
     protected String opaque;
+    protected Map<String, String> parsedQueryPairs;
 
     /**
      * Returns a new URL object after parsing the provided URL string.
@@ -83,6 +85,29 @@ public class URL implements Serializable {
      */
     public String fragment() {
         return fragment;
+    }
+
+
+    /**
+     * Returns a map of key-value pairs from the parsed query string.
+     */
+    public Map<String, String> queryPairs() {
+        if (parsedQueryPairs != null) {
+            return parsedQueryPairs;
+        }
+        parsedQueryPairs = new HashMap<>();
+
+        if (!nullOrEmpty(query)) {
+            String[] pairs = query.split("&");
+            for (String pair : pairs) {
+                String[] parts = pair.split("=");
+                if (parts.length == 2 && !parts[0].isEmpty()) {
+                    parsedQueryPairs.put(parts[0], parts[1]);
+                }
+            }
+        }
+
+        return parsedQueryPairs;
     }
 
     /**
