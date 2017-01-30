@@ -19,10 +19,9 @@ import java.util.Map;
  * <p>
  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
-public class URL implements Serializable {
+public final class URL implements Serializable {
 
     static final long serialVersionUID = 80443L;
-
 
     protected String scheme;
     protected String username;
@@ -35,7 +34,6 @@ public class URL implements Serializable {
     protected Map<String, String> parsedQueryPairs;
 
     protected URL() {
-
     }
 
     /**
