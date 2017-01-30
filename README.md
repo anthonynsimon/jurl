@@ -14,20 +14,37 @@ Fast and simple URL parsing for Java with IPv6 support.
 
 Simple example:
 ```java
-URL base = URL.parse("http://example.com/dir/#fragment");
-URL ref = URL.parse("./../../file.html?key=value");
+import com.anthonynsimon.url.URL;
+import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
+import com.anthonynsimon.url.exceptions.MalformedURLException;
 
-base.scheme(); // 'http'
-base.host(); // 'example.com'
-base.path(); // '/dir/'
-base.fragment(); // 'fragment'
+public class Resolving {
 
-ref.path(); // './../../file.html'
-ref.query(); // 'key=value'
+    public static void main(String[] args) {
+        try {
 
-URL resolved = base.resolveReference(ref); // 'http://example.com/file.html?key=value'
+            URL base = URL.parse("http://example.com/dir/#fragment");
+            URL ref = URL.parse("./../../file.html?key=value");
 
-resolved.path(); // '/file.html'
+            base.getScheme(); // 'http'
+            base.getHost(); // 'example.com'
+            base.getPath(); // '/dir/'
+            base.getFragment(); // 'fragment'
+
+            ref.getPath(); // './../../file.html'
+            ref.getQueryPairs(); // '{key=value}'
+
+            URL resolved = base.resolveReference(ref); // 'http://example.com/file.html?key=value'
+
+            resolved.getPath(); // '/file.html'
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (InvalidURLReferenceException e) {
+            e.printStackTrace();
+        }
+    }
+}
 ```
 
 ## Issues
