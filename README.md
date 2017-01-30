@@ -36,8 +36,8 @@ ref.getPath(); // ./../file.html
 ref.getQueryPairs(); // Map<String, String> = {search=germany, language=de_DE}
 
 // Resolve them!
-URL resolved = base.resolveReference(ref); // https://user:secret@example♬.com/path/to/file.html?key=value
-resolved.getPath(); // /file.html
+URL resolved = base.resolveReference(ref); // https://user:secret@example♬.com/path/to/file.html?search=germany&language=de_DE
+resolved.getPath(); // /path/to/file.html
 
 // Escape UTF-8 result
 resolved.toString(); // https://user:secret@example%E2%99%AC.com/path/to/file.html?search=germany&language=de_DE
