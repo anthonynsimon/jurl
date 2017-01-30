@@ -1,6 +1,7 @@
 # jurl
 [![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds) 
-[![Test Coverage](https://img.shields.io/badge/Coverage-95%25-brightgreen.svg)](https://github.com/anthonynsimon/jurl/tree/master/src/test/java/com/anthonynsimon/url)  
+[![Test Coverage](https://codecov.io/gh/anthonynsimon/jurl/branch/master/graph/badge.svg)](https://codecov.io/gh/anthonynsimon/jurl)
+
 Fast and simple URL parsing for Java with UTF-8 support.
 
 ## Why
@@ -8,7 +9,7 @@ Fast and simple URL parsing for Java with UTF-8 support.
 - Fast - 5+ million URLs per second on commodity hardware.
 - UTF-8 encoding and decoding.
 - Supports path resolving between URLs (absolute and relative).
-- Good test coverage with plenty of edge cases.
+- Good test coverage (94%) with plenty of edge cases.
 - Supports IPv4 and IPv6.
 - No dependencies.
 
