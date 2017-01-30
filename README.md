@@ -1,7 +1,8 @@
 # jurl
 [![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds) 
 [![Test Coverage](https://codecov.io/gh/anthonynsimon/jurl/branch/master/graph/badge.svg)](https://codecov.io/gh/anthonynsimon/jurl) 
-[![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/anthonynsimon/jurl/blob/master/LICENSE)  
+[![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/anthonynsimon/jurl/blob/master/LICENSE)
+[![](https://jitpack.io/v/anthonynsimon/jurl.svg)](https://jitpack.io/#anthonynsimon/jurl)  
 
 Fast and simple URL parsing for Java with UTF-8 support.
 
@@ -41,6 +42,46 @@ resolved.getPath(); // /file.html
 // Escape UTF-8 result
 resolved.toString(); // https://user:secret@example%E2%99%AC.com/path/to/file.html?search=germany&language=de_DE
 
+```
+
+## Setup
+
+### Add the JitPack repository to your build file.
+
+For gradle:
+```
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+For maven:
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+### Add the dependency:
+
+For gradle:
+```
+dependencies {
+    compile 'com.github.anthonynsimon:jurl:v0.1.0'
+}
+```
+
+For maven:
+```
+<dependency>
+    <groupId>com.github.anthonynsimon</groupId>
+    <artifactId>jurl</artifactId>
+    <version>v0.1.0</version>
+</dependency>
 ```
 
 ## Issues
