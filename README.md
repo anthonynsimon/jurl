@@ -1,10 +1,12 @@
 # jurl
-[![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds)  
-Fast and simple URL parsing for Java with IPv6 support.
+[![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds) 
+[![Test Coverage](https://img.shields.io/badge/Coverage-95%25-brightgreen.svg)](https://github.com/anthonynsimon/jurl/tree/master/src/test/java/com/anthonynsimon/url)  
+Fast and simple URL parsing for Java with UTF-8 support.
 
 ## Why
 - Easy to use API - you just want to parse a URL after all.
 - Fast - 5+ million URLs per second on commodity hardware.
+- UTF-8 encoding and decoding.
 - Supports path resolving between URLs (absolute and relative).
 - Good test coverage with plenty of edge cases.
 - Supports IPv4 and IPv6.
@@ -12,39 +14,31 @@ Fast and simple URL parsing for Java with IPv6 support.
 
 ## Getting Started
 
-Simple example:
+Example:
 ```java
-import com.anthonynsimon.url.URL;
-import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
-import com.anthonynsimon.url.exceptions.MalformedURLException;
+ // Parse URLs
+URL base = URL.parse("https://user:secret@example♬.com/path/to/my/dir#about");
+URL ref = URL.parse("./../file.html?search=germany&language=de_DE");
 
-public class Resolving {
+// Parsed base
+base.getScheme(); // https
+base.getUsername(); // user
+base.getPassword(); // secret
+base.getHost(); // example♬.com
+base.getPath(); // /path/to/my/dir
+base.getFragment(); // about
 
-    public static void main(String[] args) {
-        try {
+// Parsed reference
+ref.getPath(); // ./../file.html
+ref.getQueryPairs(); // Map<String, String> = {search=germany, language=de_DE}
 
-            URL base = URL.parse("http://example.com/dir/#fragment");
-            URL ref = URL.parse("./../../file.html?key=value");
+// Resolve them!
+URL resolved = base.resolveReference(ref); // https://user:secret@example♬.com/path/to/file.html?key=value
+resolved.getPath(); // /file.html
 
-            base.getScheme(); // 'http'
-            base.getHost(); // 'example.com'
-            base.getPath(); // '/dir/'
-            base.getFragment(); // 'fragment'
+// Escape UTF-8 result
+resolved.toString(); // https://user:secret@example%E2%99%AC.com/path/to/file.html?search=germany&language=de_DE
 
-            ref.getPath(); // './../../file.html'
-            ref.getQueryPairs(); // '{key=value}'
-
-            URL resolved = base.resolveReference(ref); // 'http://example.com/file.html?key=value'
-
-            resolved.getPath(); // '/file.html'
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (InvalidURLReferenceException e) {
-            e.printStackTrace();
-        }
-    }
-}
 ```
 
 ## Issues
