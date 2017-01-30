@@ -35,8 +35,7 @@ public class URL implements Serializable {
      * Returns a new URL object after parsing the provided URL string.
      */
     public static URL parse(String url) throws MalformedURLException {
-        URL u = new URL();
-        return Parser.parse(url, u);
+        return Parser.parse(url);
     }
 
     /**
@@ -172,7 +171,7 @@ public class URL implements Serializable {
                 }
             }
             if (!nullOrEmpty(path)) {
-                if (!path.startsWith("/")) {
+                if (!path.startsWith("/") && !path.equals("*")) {
                     sb.append("/");
                 }
                 sb.append(PercentEscaper.escape(path, URLPart.PATH));
@@ -219,8 +218,7 @@ public class URL implements Serializable {
     }
 
     public URL resolveReference(String ref) throws MalformedURLException, InvalidURLReferenceException {
-        URL url = new URL();
-        Parser.parse(ref, url);
+        URL url = Parser.parse(ref);
         return resolveReference(url);
     }
 

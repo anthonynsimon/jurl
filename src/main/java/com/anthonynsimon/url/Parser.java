@@ -6,12 +6,10 @@ class Parser {
     /**
      * Returns a the URL with the new values after parsing the provided URL string.
      */
-    public static URL parse(String rawUrl, URL target) throws MalformedURLException {
+    public static URL parse(String rawUrl) throws MalformedURLException {
+        URL target = new URL();
         if (rawUrl == null || rawUrl.isEmpty()) {
             throw new MalformedURLException("raw url string is empty");
-        }
-        if (target == null) {
-            throw new MalformedURLException("target url is null");
         }
 
         String remaining = rawUrl;
@@ -73,7 +71,7 @@ class Parser {
      *
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    private static String parseScheme(String remaining, URL target) throws MalformedURLException {
+    protected static String parseScheme(String remaining, URL target) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
             char c = remaining.charAt(i);
             if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
@@ -99,7 +97,7 @@ class Parser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    private static void parseAuthority(String authority, URL target) throws MalformedURLException {
+    protected static void parseAuthority(String authority, URL target) throws MalformedURLException {
         int i = authority.lastIndexOf('@');
         if (i >= 0) {
             String credentials = authority.substring(0, i);
@@ -121,7 +119,7 @@ class Parser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    private static void parseHost(String str, URL target) throws MalformedURLException {
+    protected static void parseHost(String str, URL target) throws MalformedURLException {
         if (str.startsWith("[")) {
             int i = str.lastIndexOf("]");
             if (i < 0) {
@@ -162,12 +160,13 @@ class Parser {
      * ':ab80' => FALSE
      * ':abc'  => FALSE
      */
-    private static boolean isPortValid(String portStr) {
+    protected static boolean isPortValid(String portStr) {
         if (portStr == null || portStr.isEmpty()) {
             return true;
         }
         int i = portStr.indexOf(":");
-        if (i < 0) {
+        // Port format must be ':8080'
+        if (i != 0) {
             return false;
         }
         portStr = portStr.substring(i + 1, portStr.length());

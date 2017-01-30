@@ -407,6 +407,30 @@ public class URLTest {
                     null,
                     "/abc/123/xyz"
             ),
+            // '*' path
+            new URLTestCase(
+                    "*",
+                    null,
+                    null,
+                    null,
+                    null,
+                    "*",
+                    null,
+                    null,
+                    "*"
+            ),
+            // '*' path with query and fragment
+            new URLTestCase(
+                    "*?key=value#frag",
+                    null,
+                    null,
+                    null,
+                    null,
+                    "*",
+                    "key=value",
+                    "frag",
+                    "*?key=value#frag"
+            ),
             // Escaped ? in credentials
             new URLTestCase(
                     "https://us%3Fer:p%3fssword@example.com",
@@ -1254,6 +1278,38 @@ public class URLTest {
     public void testEmpty() throws MalformedURLException {
         URL url = URL.parse("");
     }
+
+
+    @Test(expected = MalformedURLException.class)
+    public void testIPv6WithoutClosingtag() throws MalformedURLException {
+        URL url = URL.parse("http://[::1");
+    }
+
+    @Test(expected = MalformedURLException.class)
+    public void testIPv6InvalidPort() throws MalformedURLException {
+        URL url = URL.parse("http://[::1]:123abc");
+    }
+
+    @Test(expected = MalformedURLException.class)
+    public void testIPv6InvalidPort2() throws MalformedURLException {
+        URL url = URL.parse("http://[::1]:");
+    }
+
+
+    @Test
+    public void testIsPortValid() throws MalformedURLException {
+        assertFalse(Parser.isPortValid("12345"));
+        assertFalse(Parser.isPortValid("abcde"));
+        assertFalse(Parser.isPortValid(":abcde"));
+        assertFalse(Parser.isPortValid(":"));
+        assertFalse(Parser.isPortValid(":::"));
+        assertFalse(Parser.isPortValid("123:456"));
+
+        assertTrue(Parser.isPortValid(":1234"));
+        assertTrue(Parser.isPortValid(":888888"));
+        assertTrue(Parser.isPortValid(":443"));
+    }
+
 
     @Test(expected = MalformedURLException.class)
     public void testColonWithoutPort() throws MalformedURLException {
