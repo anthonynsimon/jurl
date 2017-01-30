@@ -2,7 +2,7 @@ package com.anthonynsimon.url.examples;
 
 import com.anthonynsimon.url.URL;
 
-public class Main {
+public class Resolving {
 
     public static void main(String[] args) {
         try {
