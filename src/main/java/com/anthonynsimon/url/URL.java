@@ -4,6 +4,8 @@ import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +87,24 @@ public class URL implements Serializable {
      */
     public String fragment() {
         return fragment;
+    }
+
+    /**
+     * Returns a java.net.URL object from the parsed url.
+     *
+     * @throws java.net.MalformedURLException if something went wrong while created the new object.
+     */
+    public java.net.URL toURL() throws java.net.MalformedURLException {
+        return new java.net.URL(toString());
+    }
+
+    /**
+     * Returns a java.net.URI object from the parsed url.
+     *
+     * @throws java.net.URISyntaxException if something went wrong while created the new object.
+     */
+    public java.net.URI toURI() throws URISyntaxException {
+        return new URI(toString());
     }
 
 

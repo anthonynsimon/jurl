@@ -672,6 +672,18 @@ public class URLTest {
             ),
     };
 
+    private String[] toJavaClassCases = {
+            "http://www.example.com",
+            "http://www.example.com/path/to/my/file.html",
+            "http://www.example.com/path/to/my/file.html?q=key/value",
+            "http://www.example.com/path/to/my/file.html?q=key/value#fragment",
+            "http://example/path/to/my/file?q=key/value#fragment",
+            "http://example/path/to/my/file?q=http://testing/value#fragment",
+            "https://username:password@host.com:8080/path/goes/here?search=for+this,and+this&another=true#fragment",
+            "https://192.168.1.1:443",
+            "http://[::1]:8080"
+    };
+
     private URLReferenceTestCase[] resolveReferenceCases = new URLReferenceTestCase[]{
             new URLReferenceTestCase(
                     "http://www.domain.com/path/to/RESOURCE.html",
@@ -1195,6 +1207,25 @@ public class URLTest {
     }
 
     @Test
+    public void testToURL() throws Exception {
+        for (String testCase : toJavaClassCases) {
+            URL url = URL.parse(testCase);
+            java.net.URL javaURL = url.toURL();
+            assertEquals(testCase, javaURL.toString());
+        }
+    }
+
+
+    @Test
+    public void testToURI() throws Exception {
+        for (String testCase : toJavaClassCases) {
+            URL url = URL.parse(testCase);
+            java.net.URI javaURI = url.toURI();
+            assertEquals(testCase, javaURI.toString());
+        }
+    }
+
+    @Test
     public void testQueryStringValues() throws Exception {
         for (QueryStringTestCase testCase : queryStringCases) {
             URL url = URL.parse(testCase.input);
@@ -1349,6 +1380,16 @@ public class URLTest {
         public Map<String, String> expected;
 
         public QueryStringTestCase(String input, Map<String, String> expected) {
+            this.input = input;
+            this.expected = expected;
+        }
+    }
+
+    private class ToJavaClassTestCase {
+        public String input;
+        public String expected;
+
+        public ToJavaClassTestCase(String input, String expected) {
             this.input = input;
             this.expected = expected;
         }
