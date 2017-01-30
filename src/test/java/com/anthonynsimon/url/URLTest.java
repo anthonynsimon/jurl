@@ -1202,7 +1202,6 @@ public class URLTest {
         }
     }
 
-
     @Test(expected = MalformedURLException.class)
     public void testNullParam() throws MalformedURLException {
         URL url = URL.parse("");
