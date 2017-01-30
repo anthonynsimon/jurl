@@ -2,12 +2,11 @@ package com.anthonynsimon.url;
 
 import com.anthonynsimon.url.exceptions.InvalidURLReferenceException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class URLTest {
 
@@ -1232,14 +1231,14 @@ public class URLTest {
     public void testUrls() throws Exception {
         for (URLTestCase testCase : urlTestCases) {
             URL url = URL.parse(testCase.input);
-            assertEquals(testCase.expectedScheme, url.getScheme());
-            assertEquals(testCase.expectedUsername, url.getUsername());
-            assertEquals(testCase.expectedPassword, url.getPassword());
-            assertEquals(testCase.expectedHost, url.getHost());
-            assertEquals(testCase.expectedPath, url.getPath());
-            assertEquals(testCase.expectedQuery, url.getQuery());
-            assertEquals(testCase.expectedFragment, url.getFragment());
-            assertEquals(testCase.expectedStringRepr, url.toString());
+            Assert.assertEquals(testCase.expectedScheme, url.getScheme());
+            Assert.assertEquals(testCase.expectedUsername, url.getUsername());
+            Assert.assertEquals(testCase.expectedPassword, url.getPassword());
+            Assert.assertEquals(testCase.expectedHost, url.getHost());
+            Assert.assertEquals(testCase.expectedPath, url.getPath());
+            Assert.assertEquals(testCase.expectedQuery, url.getQuery());
+            Assert.assertEquals(testCase.expectedFragment, url.getFragment());
+            Assert.assertEquals(testCase.expectedStringRepr, url.toString());
         }
     }
 
@@ -1248,7 +1247,7 @@ public class URLTest {
         for (String testCase : toJavaClassCases) {
             URL url = URL.parse(testCase);
             java.net.URL javaURL = url.toJavaURL();
-            assertEquals(testCase, javaURL.toString());
+            Assert.assertEquals(testCase, javaURL.toString());
         }
     }
 
@@ -1258,7 +1257,7 @@ public class URLTest {
         for (String testCase : toJavaClassCases) {
             URL url = URL.parse(testCase);
             java.net.URI javaURI = url.toJavaURI();
-            assertEquals(testCase, javaURI.toString());
+            Assert.assertEquals(testCase, javaURI.toString());
         }
     }
 
@@ -1266,7 +1265,7 @@ public class URLTest {
     public void testQueryStringValues() throws Exception {
         for (QueryStringTestCase testCase : queryStringCases) {
             URL url = URL.parse(testCase.input);
-            assertEquals(testCase.expected, url.getQueryPairs());
+            Assert.assertEquals(testCase.expected, url.getQueryPairs());
         }
     }
 
@@ -1309,24 +1308,24 @@ public class URLTest {
         Map<String, String> second = url.getQueryPairs();
 
         // Test expected values
-        assertEquals(expected, first);
+        Assert.assertEquals(expected, first);
 
         // Test referential equality
-        assertTrue(first == second);
+        Assert.assertTrue(first == second);
     }
 
     @Test
     public void testIsPortValid() throws MalformedURLException {
-        assertFalse(Parser.isPortValid("12345"));
-        assertFalse(Parser.isPortValid("abcde"));
-        assertFalse(Parser.isPortValid(":abcde"));
-        assertFalse(Parser.isPortValid(":"));
-        assertFalse(Parser.isPortValid(":::"));
-        assertFalse(Parser.isPortValid("123:456"));
+        Assert.assertFalse(new DefaultParser().isPortValid("12345"));
+        Assert.assertFalse(new DefaultParser().isPortValid("abcde"));
+        Assert.assertFalse(new DefaultParser().isPortValid(":abcde"));
+        Assert.assertFalse(new DefaultParser().isPortValid(":"));
+        Assert.assertFalse(new DefaultParser().isPortValid(":::"));
+        Assert.assertFalse(new DefaultParser().isPortValid("123:456"));
 
-        assertTrue(Parser.isPortValid(":1234"));
-        assertTrue(Parser.isPortValid(":888888"));
-        assertTrue(Parser.isPortValid(":443"));
+        Assert.assertTrue(new DefaultParser().isPortValid(":1234"));
+        Assert.assertTrue(new DefaultParser().isPortValid(":888888"));
+        Assert.assertTrue(new DefaultParser().isPortValid(":443"));
     }
 
 
@@ -1342,17 +1341,17 @@ public class URLTest {
 
     @Test
     public void testAbsoluteURLs() throws Exception {
-        assertTrue(URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section").isAbsolute());
-        assertTrue(URL.parse("http://domain.com").isAbsolute());
-        assertTrue(URL.parse("http://www.domain.com?key=value").isAbsolute());
-        assertTrue(URL.parse("http://192.168.0.1/path/to/RESOURCE.html?q=abc#section").isAbsolute());
-        assertTrue(URL.parse("http://192.168.0.1").isAbsolute());
-        assertTrue(URL.parse("file:///home/user").isAbsolute());
+        Assert.assertTrue(URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section").isAbsolute());
+        Assert.assertTrue(URL.parse("http://domain.com").isAbsolute());
+        Assert.assertTrue(URL.parse("http://www.domain.com?key=value").isAbsolute());
+        Assert.assertTrue(URL.parse("http://192.168.0.1/path/to/RESOURCE.html?q=abc#section").isAbsolute());
+        Assert.assertTrue(URL.parse("http://192.168.0.1").isAbsolute());
+        Assert.assertTrue(URL.parse("file:///home/user").isAbsolute());
 
-        assertFalse(URL.parse("///home/user").isAbsolute());
-        assertFalse(URL.parse("/home/user").isAbsolute());
-        assertFalse(URL.parse("home/user").isAbsolute());
-        assertFalse(URL.parse("home").isAbsolute());
+        Assert.assertFalse(URL.parse("///home/user").isAbsolute());
+        Assert.assertFalse(URL.parse("/home/user").isAbsolute());
+        Assert.assertFalse(URL.parse("home/user").isAbsolute());
+        Assert.assertFalse(URL.parse("home").isAbsolute());
     }
 
     @Test
@@ -1364,8 +1363,8 @@ public class URLTest {
             URL resolvedUrlRef = base.resolveReference(urlRef);
             URL resolvedStringRef = base.resolveReference(testCase.inputReference);
 
-            assertEquals(testCase.expectedResolvedReference, resolvedUrlRef.toString());
-            assertEquals(testCase.expectedResolvedReference, resolvedStringRef.toString());
+            Assert.assertEquals(testCase.expectedResolvedReference, resolvedUrlRef.toString());
+            Assert.assertEquals(testCase.expectedResolvedReference, resolvedStringRef.toString());
         }
     }
 
@@ -1374,7 +1373,7 @@ public class URLTest {
         for (PathResolveTestCase testCase : pathResolveCases) {
             URL url = new URL();
             String resolved = url.resolvePath(testCase.inputBase, testCase.inputReference);
-            assertEquals(testCase.expected, resolved);
+            Assert.assertEquals(testCase.expected, resolved);
         }
     }
 
@@ -1382,15 +1381,15 @@ public class URLTest {
     public void testHashCode() throws Exception {
         URL urlA = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
         URL urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
-        assertTrue(urlA.hashCode() == urlB.hashCode());
+        Assert.assertTrue(urlA.hashCode() == urlB.hashCode());
 
         urlA = URL.parse("http://www.domain.com");
         urlB = URL.parse("http://www.domain.com/");
-        assertFalse(urlA.hashCode() == urlB.hashCode());
+        Assert.assertFalse(urlA.hashCode() == urlB.hashCode());
 
         urlA = URL.parse("http://www.domain.com");
         urlB = URL.parse("http://www.domain.de");
-        assertFalse(urlA.hashCode() == urlB.hashCode());
+        Assert.assertFalse(urlA.hashCode() == urlB.hashCode());
     }
 
     @Test(expected = InvalidURLReferenceException.class)
@@ -1414,7 +1413,7 @@ public class URLTest {
 
     @Test(expected = MalformedURLException.class)
     public void testUnescapeInvalidHex() throws Exception {
-        PercentEscaper.unescape("http://www.domain.com/path%C3%##");
+        new PercentEscaper().unescape("http://www.domain.com/path%C3%##");
     }
 
 
@@ -1422,42 +1421,42 @@ public class URLTest {
     public void testEquals() throws Exception {
         URL urlA = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
         URL urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
-        assertTrue(urlA.equals(urlB));
+        Assert.assertTrue(urlA.equals(urlB));
 
         urlA = URL.parse("http://domain.com/path/to/RESOURCE.html?q=abc#section");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
-        assertFalse(urlA.equals(urlB));
+        Assert.assertFalse(urlA.equals(urlB));
 
         urlA = URL.parse("http://www.DOMAIN.com/path/to/RESOURCE.html?q=abc#section");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
-        assertTrue(urlA.equals(urlB));
+        Assert.assertTrue(urlA.equals(urlB));
 
         urlA = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc#section");
-        assertFalse(urlA.equals(urlB));
+        Assert.assertFalse(urlA.equals(urlB));
 
         urlA = URL.parse("http://domain.com/path/to/RESOURCE.html?q=abc");
         urlB = URL.parse("http://domain.com/path/to/RESOURCE.html?q=abc#");
-        assertTrue(urlA.equals(urlB));
+        Assert.assertTrue(urlA.equals(urlB));
 
         urlA = URL.parse("http://www.domain.de/path/to/RESOURCE.html?q=abc");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
-        assertFalse(urlA.equals(urlB));
+        Assert.assertFalse(urlA.equals(urlB));
 
         urlA = URL.parse("http://www.domain.com:8080/path/to/RESOURCE.html?q=abc");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
-        assertFalse(urlA.equals(urlB));
+        Assert.assertFalse(urlA.equals(urlB));
 
         urlA = URL.parse("http://www.domain.com/path/to/ANOTHER.html?q=abc");
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
-        assertFalse(urlA.equals(urlB));
+        Assert.assertFalse(urlA.equals(urlB));
 
-        assertFalse(urlA.equals(null));
-        assertFalse(urlA.equals("http://www.domain.com/path/to/ANOTHER.html?q=abc"));
-        assertFalse(urlA.equals(123));
+        Assert.assertFalse(urlA.equals(null));
+        Assert.assertFalse(urlA.equals("http://www.domain.com/path/to/ANOTHER.html?q=abc"));
+        Assert.assertFalse(urlA.equals(123));
 
         urlA = URL.parse("8080");
-        assertFalse(urlA.equals(8080));
+        Assert.assertFalse(urlA.equals(8080));
     }
 
     private class URLReferenceTestCase {

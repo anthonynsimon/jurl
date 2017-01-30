@@ -6,33 +6,33 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * PercentEscaper is a utility class that handles the escaping and unescaping of characters in URLs.
+ * PercentEscaper is an escaper that handles the escaping and unescaping of characters in URLs.
  * It escapes character based on the context (part of the URL) that is being dealt with.
- *
+ * <p>
  * Supports UTF-8 escaping and unescaping.
  */
-class PercentEscaper {
+final class PercentEscaper implements Escaper {
 
     /**
      * Reserved characters, allowed in certain parts of the URL. Must be escaped in most cases.
      */
-    private static final char[] reservedChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
-
+    private final char[] reservedChars = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=', ':', '[', ']', '<', '>', '"'};
     /**
      * Unreserved characters do not need to be escaped.
      */
-    private static final char[] unreservedChars = {'-', '_', '.', '~'};
-
+    private final char[] unreservedChars = {'-', '_', '.', '~'};
     /**
      * Byte masks to aid in the decoding of UTF-8 byte arrays.
      */
-    private static final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
+    private final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
 
+    public PercentEscaper() {
+    }
 
     /**
      * Returns true if escaping is required based on the character and encode zone provided.
      */
-    private static boolean shouldEscapeChar(char c, URLPart zone) {
+    private boolean shouldEscapeChar(char c, URLPart zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
             return false;
         }
@@ -72,7 +72,7 @@ class PercentEscaper {
         return true;
     }
 
-    private static boolean needsEscaping(String str, URLPart zone) {
+    private boolean needsEscaping(String str, URLPart zone) {
         char[] chars = str.toCharArray();
         for (char c : chars) {
             if (shouldEscapeChar(c, zone)) {
@@ -82,7 +82,7 @@ class PercentEscaper {
         return false;
     }
 
-    private static boolean needsUnescaping(String str) {
+    private boolean needsUnescaping(String str) {
         char[] chars = str.toCharArray();
         for (char c : chars) {
             if (c == '%') {
@@ -96,7 +96,7 @@ class PercentEscaper {
      * Returns a percent-escaped string. Each character will be evaluated in case it needs to be escaped
      * based on the provided EncodeZone.
      */
-    public static String escape(String str, URLPart zone) {
+    public String escape(String str, URLPart zone) {
         // The string might not need escaping at all, check first.
         if (!needsEscaping(str, zone)) {
             return str;
@@ -134,7 +134,7 @@ class PercentEscaper {
      *
      * @throws MalformedURLException if an invalid escape sequence is found.
      */
-    public static String unescape(String str) throws MalformedURLException {
+    public String unescape(String str) throws MalformedURLException {
         // The string might not need unescaping at all, check first.
         if (!needsUnescaping(str)) {
             return str;
@@ -187,7 +187,7 @@ class PercentEscaper {
      *
      * @throws InvalidHexException if the provided array of hex characters is invalid.
      */
-    private static byte unhex(char[] hex) throws InvalidHexException {
+    private byte unhex(char[] hex) throws InvalidHexException {
         int result = 0;
         for (int i = 0; i < hex.length; i++) {
             char c = hex[hex.length - i - 1];
@@ -207,7 +207,7 @@ class PercentEscaper {
         return (byte) result;
     }
 
-    private static int pow(int base, int exp) {
+    private int pow(int base, int exp) {
         int result = 1;
         while (exp > 0) {
             result *= base;

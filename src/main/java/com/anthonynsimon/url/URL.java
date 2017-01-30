@@ -31,7 +31,11 @@ public final class URL implements Serializable {
     protected String query;
     protected String fragment;
     protected String opaque;
+
     protected Map<String, String> parsedQueryPairs;
+
+    private final Escaper escaper = new PercentEscaper();
+    private final static Parser parser = new DefaultParser();
 
     protected URL() {
     }
@@ -40,7 +44,7 @@ public final class URL implements Serializable {
      * Returns a new URL object after parsing the provided URL string.
      */
     public static URL parse(String url) throws MalformedURLException {
-        return Parser.parse(url);
+        return parser.parse(url);
     }
 
     /**
@@ -163,22 +167,22 @@ public final class URL implements Serializable {
             if (!nullOrEmpty(scheme) || !nullOrEmpty(host)) {
                 sb.append("//");
                 if (!nullOrEmpty(username)) {
-                    sb.append(PercentEscaper.escape(username, URLPart.CREDENTIALS));
+                    sb.append(escaper.escape(username, URLPart.CREDENTIALS));
                     if (!nullOrEmpty(password)) {
                         sb.append(":");
-                        sb.append(PercentEscaper.escape(password, URLPart.CREDENTIALS));
+                        sb.append(escaper.escape(password, URLPart.CREDENTIALS));
                     }
                     sb.append("@");
                 }
                 if (!nullOrEmpty(host)) {
-                    sb.append(PercentEscaper.escape(host, URLPart.HOST));
+                    sb.append(escaper.escape(host, URLPart.HOST));
                 }
             }
             if (!nullOrEmpty(path)) {
                 if (!path.startsWith("/") && !path.equals("*")) {
                     sb.append("/");
                 }
-                sb.append(PercentEscaper.escape(path, URLPart.PATH));
+                sb.append(escaper.escape(path, URLPart.PATH));
             }
         }
         if (!nullOrEmpty(query)) {
@@ -222,7 +226,7 @@ public final class URL implements Serializable {
     }
 
     public URL resolveReference(String ref) throws MalformedURLException, InvalidURLReferenceException {
-        URL url = Parser.parse(ref);
+        URL url = parser.parse(ref);
         return resolveReference(url);
     }
 

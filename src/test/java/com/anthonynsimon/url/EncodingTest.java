@@ -1,12 +1,11 @@
 package com.anthonynsimon.url;
 
 import com.anthonynsimon.url.exceptions.MalformedURLException;
+import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class EncodingTest {
-    
+
     private EncodingTestCase[] escapeCases = new EncodingTestCase[]{
             new EncodingTestCase("", ""),
             new EncodingTestCase("onetwothree", "onetwothree"),
@@ -45,30 +44,30 @@ public class EncodingTest {
     @Test
     public void testEscaping() throws Exception {
         for (EncodingTestCase testCase : escapeCases) {
-            assertEquals(testCase.expectedOutput, PercentEscaper.escape(testCase.input, URLPart.ENCODE_ZONE));
+            Assert.assertEquals(testCase.expectedOutput, new PercentEscaper().escape(testCase.input, URLPart.ENCODE_ZONE));
         }
     }
 
     @Test
     public void testUnescaping() throws Exception {
         for (EncodingTestCase testCase : unescapeCases) {
-            assertEquals(testCase.expectedOutput, PercentEscaper.unescape(testCase.input));
+            Assert.assertEquals(testCase.expectedOutput, new PercentEscaper().unescape(testCase.input));
         }
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescape() throws Exception {
-        PercentEscaper.unescape("_______%");
+        new PercentEscaper().unescape("_______%");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescapeWithUnicodeMultiple() throws Exception {
-        PercentEscaper.unescape("!__!__%Ƿabasda");
+        new PercentEscaper().unescape("!__!__%Ƿabasda");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescapeWithUnicodeSingle() throws Exception {
-        PercentEscaper.unescape("!__!__%Ƿ");
+        new PercentEscaper().unescape("!__!__%Ƿ");
     }
 
     class EncodingTestCase {
