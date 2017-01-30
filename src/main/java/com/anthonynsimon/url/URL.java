@@ -212,11 +212,7 @@ public class URL implements Serializable {
             return target;
         }
 
-        if (ref.isOpaque()) {
-            return target;
-        }
-
-        if (isOpaque()) {
+        if (ref.isOpaque() || isOpaque()) {
             return target;
         }
 
