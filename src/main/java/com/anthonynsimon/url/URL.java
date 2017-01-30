@@ -6,9 +6,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,10 +30,9 @@ public final class URL implements Serializable {
     protected String fragment;
     protected String opaque;
 
-    protected Map<String, String> parsedQueryPairs;
+    protected transient Map<String, String> parsedQueryPairs;
 
-    private final Escaper escaper = new PercentEscaper();
-    private final static Parser parser = new DefaultParser();
+    private transient final static Parser parser = new DefaultParser();
 
     protected URL() {
     }
@@ -167,22 +164,22 @@ public final class URL implements Serializable {
             if (!nullOrEmpty(scheme) || !nullOrEmpty(host)) {
                 sb.append("//");
                 if (!nullOrEmpty(username)) {
-                    sb.append(escaper.escape(username, URLPart.CREDENTIALS));
+                    sb.append(PercentEscaper.escape(username, URLPart.CREDENTIALS));
                     if (!nullOrEmpty(password)) {
                         sb.append(":");
-                        sb.append(escaper.escape(password, URLPart.CREDENTIALS));
+                        sb.append(PercentEscaper.escape(password, URLPart.CREDENTIALS));
                     }
                     sb.append("@");
                 }
                 if (!nullOrEmpty(host)) {
-                    sb.append(escaper.escape(host, URLPart.HOST));
+                    sb.append(PercentEscaper.escape(host, URLPart.HOST));
                 }
             }
             if (!nullOrEmpty(path)) {
                 if (!path.startsWith("/") && !path.equals("*")) {
                     sb.append("/");
                 }
-                sb.append(escaper.escape(path, URLPart.PATH));
+                sb.append(PercentEscaper.escape(path, URLPart.PATH));
             }
         }
         if (!nullOrEmpty(query)) {
@@ -253,7 +250,7 @@ public final class URL implements Serializable {
         }
 
         if (!nullOrEmpty(ref.scheme) || !nullOrEmpty(ref.host)) {
-            target.path = resolvePath(ref.path, "");
+            target.path = PathResolver.resolve(ref.path, "");
             return target;
         }
 
@@ -264,61 +261,9 @@ public final class URL implements Serializable {
         target.host = host;
         target.username = username;
         target.password = password;
-        target.path = resolvePath(path, ref.path);
+        target.path = PathResolver.resolve(path, ref.path);
 
         return target;
-    }
-
-    protected String resolvePath(String base, String ref) {
-        String merged;
-
-        if (nullOrEmpty(ref)) {
-            merged = base;
-        } else if (!(ref.charAt(0) == '/') && !nullOrEmpty(base)) {
-            int i = base.lastIndexOf("/");
-            merged = base.substring(0, i + 1) + ref;
-        } else {
-            merged = ref;
-        }
-
-        if (nullOrEmpty(merged)) {
-            return "";
-        }
-
-        String[] parts = merged.split("/", -1);
-        List<String> result = new ArrayList<>();
-
-        for (int i = 0; i < parts.length; i++) {
-            switch (parts[i]) {
-                case "":
-                case ".":
-                    // Ignore
-                    break;
-                case "..":
-                    if (result.size() > 0) {
-                        result.remove(result.size() - 1);
-                    }
-                    break;
-                default:
-                    result.add(parts[i]);
-                    break;
-            }
-        }
-
-        if (parts.length > 0) {
-            // Get last element, if it was '.' or '..' we need
-            // to end in a slash.
-            switch (parts[parts.length - 1]) {
-                case ".":
-                case "..":
-                    // Add an empty last string, it will be turned into
-                    // a slash when joined together.
-                    result.add("");
-                    break;
-            }
-        }
-
-        return "/" + String.join("/", result);
     }
 
 }

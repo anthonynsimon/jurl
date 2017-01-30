@@ -1347,7 +1347,6 @@ public class URLTest {
         Assert.assertTrue(URL.parse("http://192.168.0.1/path/to/RESOURCE.html?q=abc#section").isAbsolute());
         Assert.assertTrue(URL.parse("http://192.168.0.1").isAbsolute());
         Assert.assertTrue(URL.parse("file:///home/user").isAbsolute());
-
         Assert.assertFalse(URL.parse("///home/user").isAbsolute());
         Assert.assertFalse(URL.parse("/home/user").isAbsolute());
         Assert.assertFalse(URL.parse("home/user").isAbsolute());
@@ -1371,8 +1370,7 @@ public class URLTest {
     @Test
     public void testResolvePath() throws Exception {
         for (PathResolveTestCase testCase : pathResolveCases) {
-            URL url = new URL();
-            String resolved = url.resolvePath(testCase.inputBase, testCase.inputReference);
+            String resolved = PathResolver.resolve(testCase.inputBase, testCase.inputReference);
             Assert.assertEquals(testCase.expected, resolved);
         }
     }

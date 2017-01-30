@@ -7,8 +7,6 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
  */
 final class DefaultParser implements Parser {
 
-    private static final Escaper escaper = new PercentEscaper();
-
     public DefaultParser() {
     }
 
@@ -69,7 +67,7 @@ final class DefaultParser implements Parser {
         }
 
         if (!remaining.isEmpty()) {
-            target.path = escaper.unescape(remaining);
+            target.path = PercentEscaper.unescape(remaining);
         }
 
         return target;
@@ -112,10 +110,10 @@ final class DefaultParser implements Parser {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                target.username = escaper.unescape(parts[0]);
-                target.password = escaper.unescape(parts[1]);
+                target.username = PercentEscaper.unescape(parts[0]);
+                target.password = PercentEscaper.unescape(parts[1]);
             } else {
-                target.username = escaper.unescape(credentials);
+                target.username = PercentEscaper.unescape(credentials);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -151,7 +149,7 @@ final class DefaultParser implements Parser {
                 }
             }
         }
-        String ht = escaper.unescape(str.toLowerCase());
+        String ht = PercentEscaper.unescape(str.toLowerCase());
         if (!ht.isEmpty()) {
             target.host = ht;
         }
