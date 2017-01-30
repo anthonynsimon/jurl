@@ -77,11 +77,13 @@ dependencies {
 
 For maven:
 ```
-<dependency>
-    <groupId>com.github.anthonynsimon</groupId>
-    <artifactId>jurl</artifactId>
-    <version>v0.1.0</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>com.github.anthonynsimon</groupId>
+        <artifactId>jurl</artifactId>
+        <version>v0.1.0</version>
+    </dependency>
+</dependencies>
 ```
 
 ## Issues
