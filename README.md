@@ -3,11 +3,11 @@
 Fast and simple URL parsing for Java with IPv6 support.
 
 ## Why
-- Parse URLs and get the result you would expect.
-- Easy to use API - you just want to parse a URL.
-- Fast - 2+ million URLs per second on a regular laptop.
+- Easy to use API - you just want to parse a URL after all.
+- Fast - 5+ million URLs per second on commodity hardware.
+- Supports path resolving between URLs (absolute and relative).
 - Good test coverage with plenty of edge cases.
-- Supports IPv4 and IPv6 with zone identifiers.
+- Supports IPv4 and IPv6.
 - No dependencies.
 
 ## Getting Started
