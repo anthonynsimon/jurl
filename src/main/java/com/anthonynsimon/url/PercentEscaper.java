@@ -3,7 +3,7 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.InvalidHexException;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * PercentEscaper is a utility class that handles the escaping and unescaping of characters in URLs.
@@ -102,13 +102,7 @@ class PercentEscaper {
             return str;
         }
 
-        byte[] bytes;
-        try {
-            bytes = str.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
+        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
 
         int i = 0;
         String result = "";

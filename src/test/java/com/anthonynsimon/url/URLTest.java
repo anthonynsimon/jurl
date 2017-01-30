@@ -1407,6 +1407,16 @@ public class URLTest {
         base.resolveReference(ref);
     }
 
+    @Test(expected = MalformedURLException.class)
+    public void testMissingScheme() throws Exception {
+        URL url = URL.parse(":http://www.domain.com/path");
+    }
+
+    @Test(expected = MalformedURLException.class)
+    public void testUnescapeInvalidHex() throws Exception {
+        PercentEscaper.unescape("http://www.domain.com/path%C3%##");
+    }
+
 
     @Test
     public void testEquals() throws Exception {

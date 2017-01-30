@@ -233,7 +233,7 @@ public class URL implements Serializable {
      *
      * @throws InvalidURLReferenceException if the provided ref URL is invalid or if the base URL is not absolute.
      */
-    public URL resolveReference(URL ref) throws InvalidURLReferenceException {
+    public URL resolveReference(URL ref) throws InvalidURLReferenceException, MalformedURLException {
         if (!isAbsolute()) {
             throw new InvalidURLReferenceException("base url is not absolute");
         }
@@ -241,12 +241,7 @@ public class URL implements Serializable {
             throw new InvalidURLReferenceException("reference url is null");
         }
 
-        URL target;
-        try {
-            target = URL.parse(ref.toString());
-        } catch (MalformedURLException e) {
-            throw new InvalidURLReferenceException("reference url is invalid");
-        }
+        URL target = URL.parse(ref.toString());
 
         if (!ref.isAbsolute()) {
             target.scheme = scheme;

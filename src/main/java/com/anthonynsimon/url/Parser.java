@@ -2,7 +2,11 @@ package com.anthonynsimon.url;
 
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
+/**
+ * URL parsing utility class.
+ */
 class Parser {
+
     /**
      * Returns a the URL with the new values after parsing the provided URL string.
      */
