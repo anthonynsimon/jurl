@@ -20,7 +20,6 @@ import java.util.Map;
  * scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
  */
 public class URL implements Serializable {
-    // TODO: add support to build an URL manually
 
     protected String scheme;
     protected String username;
@@ -43,49 +42,49 @@ public class URL implements Serializable {
     /**
      * Returns the scheme ('http' or 'file' or 'ftp' etc...) of the URL if it exists.
      */
-    public String scheme() {
+    public String getScheme() {
         return scheme;
     }
 
     /**
      * Returns the username part of the userinfo if it exists.
      */
-    public String username() {
+    public String getUsername() {
         return username;
     }
 
     /**
      * Returns the password part of the userinfo if it exists.
      */
-    public String password() {
+    public String getPassword() {
         return password;
     }
 
     /**
      * Returns the host ('www.example.com' or '192.168.0.1:8080' or '[fde2:d7de:302::]') of the URL if it exists.
      */
-    public String host() {
+    public String getHost() {
         return host;
     }
 
     /**
      * Returns the path ('/path/to/my/file.html') of the URL if it exists.
      */
-    public String path() {
+    public String getPath() {
         return path;
     }
 
     /**
      * Returns the query ('?q=foo&bar') of the URL if it exists.
      */
-    public String query() {
+    public String getQuery() {
         return query;
     }
 
     /**
      * Returns the fragment ('#foo&bar') of the URL if it exists.
      */
-    public String fragment() {
+    public String getFragment() {
         return fragment;
     }
 
@@ -94,7 +93,7 @@ public class URL implements Serializable {
      *
      * @throws java.net.MalformedURLException if something went wrong while created the new object.
      */
-    public java.net.URL toURL() throws java.net.MalformedURLException {
+    public java.net.URL toJavaURL() throws java.net.MalformedURLException {
         return new java.net.URL(toString());
     }
 
@@ -103,7 +102,7 @@ public class URL implements Serializable {
      *
      * @throws java.net.URISyntaxException if something went wrong while created the new object.
      */
-    public java.net.URI toURI() throws URISyntaxException {
+    public java.net.URI toJavaURI() throws URISyntaxException {
         return new URI(toString());
     }
 
@@ -111,7 +110,7 @@ public class URL implements Serializable {
     /**
      * Returns a map of key-value pairs from the parsed query string.
      */
-    public Map<String, String> queryPairs() {
+    public Map<String, String> getQueryPairs() {
         if (parsedQueryPairs != null) {
             return parsedQueryPairs;
         }
@@ -270,7 +269,7 @@ public class URL implements Serializable {
     }
 
     protected String resolvePath(String base, String ref) {
-        String merged = "";
+        String merged;
 
         if (nullOrEmpty(ref)) {
             merged = base;

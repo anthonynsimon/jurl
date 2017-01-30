@@ -1195,13 +1195,13 @@ public class URLTest {
     public void testUrls() throws Exception {
         for (URLTestCase testCase : urlTestCases) {
             URL url = URL.parse(testCase.input);
-            assertEquals(testCase.expectedScheme, url.scheme());
-            assertEquals(testCase.expectedUsername, url.username());
-            assertEquals(testCase.expectedPassword, url.password());
-            assertEquals(testCase.expectedHost, url.host());
-            assertEquals(testCase.expectedPath, url.path());
-            assertEquals(testCase.expectedQuery, url.query());
-            assertEquals(testCase.expectedFragment, url.fragment());
+            assertEquals(testCase.expectedScheme, url.getScheme());
+            assertEquals(testCase.expectedUsername, url.getUsername());
+            assertEquals(testCase.expectedPassword, url.getPassword());
+            assertEquals(testCase.expectedHost, url.getHost());
+            assertEquals(testCase.expectedPath, url.getPath());
+            assertEquals(testCase.expectedQuery, url.getQuery());
+            assertEquals(testCase.expectedFragment, url.getFragment());
             assertEquals(testCase.expectedStringRepr, url.toString());
         }
     }
@@ -1210,7 +1210,7 @@ public class URLTest {
     public void testToURL() throws Exception {
         for (String testCase : toJavaClassCases) {
             URL url = URL.parse(testCase);
-            java.net.URL javaURL = url.toURL();
+            java.net.URL javaURL = url.toJavaURL();
             assertEquals(testCase, javaURL.toString());
         }
     }
@@ -1220,7 +1220,7 @@ public class URLTest {
     public void testToURI() throws Exception {
         for (String testCase : toJavaClassCases) {
             URL url = URL.parse(testCase);
-            java.net.URI javaURI = url.toURI();
+            java.net.URI javaURI = url.toJavaURI();
             assertEquals(testCase, javaURI.toString());
         }
     }
@@ -1229,7 +1229,7 @@ public class URLTest {
     public void testQueryStringValues() throws Exception {
         for (QueryStringTestCase testCase : queryStringCases) {
             URL url = URL.parse(testCase.input);
-            assertEquals(testCase.expected, url.queryPairs());
+            assertEquals(testCase.expected, url.getQueryPairs());
         }
     }
 
