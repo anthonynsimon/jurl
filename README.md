@@ -1,6 +1,7 @@
 # jurl
 [![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds) 
-[![Test Coverage](https://codecov.io/gh/anthonynsimon/jurl/branch/master/graph/badge.svg)](https://codecov.io/gh/anthonynsimon/jurl)
+[![Test Coverage](https://codecov.io/gh/anthonynsimon/jurl/branch/master/graph/badge.svg)](https://codecov.io/gh/anthonynsimon/jurl) 
+[![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/anthonynsimon/jurl/blob/master/LICENSE)  
 
 Fast and simple URL parsing for Java with UTF-8 support.
 
