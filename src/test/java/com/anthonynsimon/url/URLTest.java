@@ -670,6 +670,18 @@ public class URLTest {
                     null,
                     "http://test.%E4%B8%96%E7%95%8C.com/foo"
             ),
+            // More UTF-8
+            new URLTestCase(
+                    "https://user:secret@example♬.com/path/to/my/dir?search=one+two#about",
+                    "https",
+                    "user",
+                    "secret",
+                    "example♬.com",
+                    "/path/to/my/dir",
+                    "search=one+two",
+                    "about",
+                    "https://user:secret@example%E2%99%AC.com/path/to/my/dir?search=one+two#about"
+            ),
     };
 
     private String[] toJavaClassCases = {
