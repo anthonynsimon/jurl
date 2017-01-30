@@ -32,7 +32,7 @@ class PercentEscaper {
     /**
      * Returns true if escaping is required based on the character and encode zone provided.
      */
-    private static boolean shouldEscape(char c, URLPart zone) {
+    private static boolean shouldEscapeChar(char c, URLPart zone) {
         if ('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9') {
             return false;
         }
@@ -72,12 +72,36 @@ class PercentEscaper {
         return true;
     }
 
+    private static boolean needsEscaping(String str, URLPart zone) {
+        char[] chars = str.toCharArray();
+        for (char c : chars) {
+            if (shouldEscapeChar(c, zone)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean needsUnescaping(String str) {
+        char[] chars = str.toCharArray();
+        for (char c : chars) {
+            if (c == '%') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Returns a percent-escaped string. Each character will be evaluated in case it needs to be escaped
      * based on the provided EncodeZone.
      */
     public static String escape(String str, URLPart zone) {
-        // TODO: first evaluate if it needs escaping, most parts don't need. This might speed things up.
+        // The string might not need escaping at all, check first.
+        if (!needsEscaping(str, zone)) {
+            return str;
+        }
+
         byte[] bytes;
         try {
             bytes = str.getBytes("UTF-8");
@@ -99,7 +123,7 @@ class PercentEscaper {
             }
             for (int j = 0; j < readBytes; j++) {
                 char c = (char) bytes[i];
-                if (shouldEscape(c, zone)) {
+                if (shouldEscapeChar(c, zone)) {
                     result += "%" + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) >> 4) + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) & 15);
                 } else {
                     result += c;
@@ -117,6 +141,11 @@ class PercentEscaper {
      * @throws MalformedURLException if an invalid escape sequence is found.
      */
     public static String unescape(String str) throws MalformedURLException {
+        // The string might not need unescaping at all, check first.
+        if (!needsUnescaping(str)) {
+            return str;
+        }
+
         char[] chars = str.toCharArray();
         String result = "";
         int len = str.length();

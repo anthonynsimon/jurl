@@ -1194,7 +1194,6 @@ public class URLTest {
         }
     }
 
-
     @Test
     public void testQueryStringValues() throws Exception {
         for (QueryStringTestCase testCase : queryStringCases) {
