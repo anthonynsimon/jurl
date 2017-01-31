@@ -1,5 +1,8 @@
 package com.anthonynsimon.url;
 
+/**
+ * URLBuilder is a helper class for the construction of a URL object.
+ */
 class URLBuilder {
     private String scheme;
     private String username;
