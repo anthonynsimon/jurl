@@ -56,14 +56,14 @@ public final class URL implements Serializable {
      * Builder is for protected use only.
      */
     URL(String scheme, String username, String password, String host, String path, String query, String fragment, String opaque) {
-        this.scheme = scheme;
-        this.username = username;
-        this.password = password;
-        this.host = host;
-        this.path = path;
-        this.query = query;
-        this.fragment = fragment;
-        this.opaque = opaque;
+        this.scheme = mapToNullIfEmpty(scheme);
+        this.username = mapToNullIfEmpty(username);
+        this.password = mapToNullIfEmpty(password);
+        this.host = mapToNullIfEmpty(host);
+        this.path = mapToNullIfEmpty(path);
+        this.query = mapToNullIfEmpty(query);
+        this.fragment = mapToNullIfEmpty(fragment);
+        this.opaque = mapToNullIfEmpty(opaque);
     }
 
     /**
@@ -71,6 +71,10 @@ public final class URL implements Serializable {
      */
     public static URL parse(String url) throws MalformedURLException {
         return URL_PARSER.parse(url);
+    }
+
+    private String mapToNullIfEmpty(String str) {
+        return str != null && !str.isEmpty() ? str : null;
     }
 
     /**
