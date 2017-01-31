@@ -4,7 +4,7 @@
 [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/anthonynsimon/jurl/blob/master/LICENSE)
 [![](https://jitpack.io/v/anthonynsimon/jurl.svg)](https://jitpack.io/#anthonynsimon/jurl)  
 
-Fast and simple URL parsing for Java with UTF-8 support.
+Fast and simple URL parsing for Java, with UTF-8 and path resolving support.
 
 ## Why
 - Easy to use API - you just want to parse a URL after all.
