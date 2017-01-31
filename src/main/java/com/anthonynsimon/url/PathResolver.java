@@ -5,13 +5,6 @@ import java.util.List;
 
 /**
  * PathResolver is a utility class that resolves a reference path against a base path.
- * <p>
- * For example:
- * <p>
- * '/some/path' resolve '..' => '/some'
- * '/some/path' resolve '.' => '/some/'
- * '/some/path' resolve './here' => '/some/here'
- * '/some/path' resolve '../here' => '/here'
  */
 final class PathResolver {
 
@@ -21,6 +14,16 @@ final class PathResolver {
     private PathResolver() {
     }
 
+    /**
+     * Returns a resolved path.
+     * <p>
+     * For example:
+     * <p>
+     * '/some/path' resolve '..' => '/some'
+     * '/some/path' resolve '.' => '/some/'
+     * '/some/path' resolve './here' => '/some/here'
+     * '/some/path' resolve '../here' => '/here'
+     */
     public static String resolve(String base, String ref) {
         String merged;
 

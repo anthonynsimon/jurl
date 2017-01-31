@@ -30,14 +30,14 @@ public final class URL implements Serializable {
      */
     private transient final static URLParser URL_PARSER = new DefaultURLParser();
 
-    protected String scheme;
-    protected String username;
-    protected String password;
-    protected String host;
-    protected String path;
-    protected String query;
-    protected String fragment;
-    protected String opaque;
+    private final String scheme;
+    private final String username;
+    private final String password;
+    private final String host;
+    private final String path;
+    private final String query;
+    private final String fragment;
+    private final String opaque;
 
     /**
      * Cached parsed query string key-value pairs.
@@ -51,11 +51,19 @@ public final class URL implements Serializable {
      */
     private transient String stringRepresentation;
 
-
     /**
      * Protect instantiation of class. Use public parse method instead to construct URLs.
+     * Builder is for protected use only.
      */
-    protected URL() {
+    URL(String scheme, String username, String password, String host, String path, String query, String fragment, String opaque) {
+        this.scheme = scheme;
+        this.username = username;
+        this.password = password;
+        this.host = host;
+        this.path = path;
+        this.query = query;
+        this.fragment = fragment;
+        this.opaque = opaque;
     }
 
     /**
@@ -112,6 +120,13 @@ public final class URL implements Serializable {
      */
     public String getFragment() {
         return fragment;
+    }
+
+    /**
+     * Returns the opaque part of the URL if it exists.
+     */
+    public String getOpaque() {
+        return opaque;
     }
 
     /**
@@ -271,27 +286,35 @@ public final class URL implements Serializable {
             throw new InvalidURLReferenceException("reference url is null");
         }
 
-        URL target = URL.parse(ref.toString());
+        URLBuilder builder = new URLBuilder()
+                .setScheme(ref.getScheme())
+                .setUsername(ref.getUsername())
+                .setPassword(ref.getPassword())
+                .setHost(ref.getHost())
+                .setPath(ref.getPath())
+                .setQuery(ref.getQuery())
+                .setFragment(ref.getFragment())
+                .setOpaque(ref.getOpaque());
 
         if (!ref.isAbsolute()) {
-            target.scheme = scheme;
+            builder.setScheme(scheme);
         }
 
         if (!nullOrEmpty(ref.scheme) || !nullOrEmpty(ref.host)) {
-            target.path = PathResolver.resolve(ref.path, "");
-            return target;
+            builder.setPath(PathResolver.resolve(ref.path, ""));
+            return builder.build();
         }
 
         if (ref.isOpaque() || isOpaque()) {
-            return target;
+            return builder.build();
         }
 
-        target.host = host;
-        target.username = username;
-        target.password = password;
-        target.path = PathResolver.resolve(path, ref.path);
-
-        return target;
+        return builder
+                .setHost(host)
+                .setUsername(username)
+                .setPassword(password)
+                .setPath(PathResolver.resolve(path, ref.path))
+                .build();
     }
 
 }

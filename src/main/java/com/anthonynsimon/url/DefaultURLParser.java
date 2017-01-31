@@ -14,63 +14,64 @@ final class DefaultURLParser implements URLParser {
      * Returns a the URL with the new values after parsing the provided URL string.
      */
     public URL parse(String rawUrl) throws MalformedURLException {
-        URL target = new URL();
         if (rawUrl == null || rawUrl.isEmpty()) {
             throw new MalformedURLException("raw url string is empty");
         }
 
+        URLBuilder builder = new URLBuilder();
         String remaining = rawUrl;
 
         int index = remaining.lastIndexOf("#");
         if (index >= 0) {
             String frag = remaining.substring(index + 1, remaining.length());
-            target.fragment = frag.isEmpty() ? null : frag;
+            builder.setFragment(frag.isEmpty() ? null : frag);
             remaining = remaining.substring(0, index);
         }
 
         if (remaining.isEmpty()) {
-            return target;
+            return builder.build();
         }
 
         if (remaining.equals("*")) {
-            target.path = "*";
-            return target;
+            builder.setPath("*");
+            return builder.build();
         }
 
         index = remaining.indexOf("?");
         if (index > 0) {
             String qr = remaining.substring(index + 1, remaining.length());
             if (!qr.isEmpty()) {
-                target.query = qr;
+                builder.setQuery(qr);
             }
             remaining = remaining.substring(0, index);
         }
 
-        remaining = parseScheme(remaining, target);
+        remaining = parseScheme(remaining, builder);
 
-        if (target.scheme != null && !target.scheme.isEmpty()) {
+        String scheme = builder.getScheme();
+        if (scheme != null && !scheme.isEmpty()) {
             if (!remaining.startsWith("/")) {
-                target.opaque = remaining;
-                return target;
+                builder.setOpaque(remaining);
+                return builder.build();
             }
         }
-        if (((target.scheme != null && !target.scheme.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
+        if (((scheme != null && !scheme.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
             remaining = remaining.substring(2, remaining.length());
             int i = remaining.indexOf("/");
             if (i >= 0) {
-                parseAuthority(remaining.substring(0, i), target);
+                parseAuthority(remaining.substring(0, i), builder);
                 remaining = remaining.substring(i, remaining.length());
             } else {
-                parseAuthority(remaining, target);
+                parseAuthority(remaining, builder);
                 remaining = "";
             }
         }
 
         if (!remaining.isEmpty()) {
-            target.path = PercentEncoder.decode(remaining);
+            builder.setPath(PercentEncoder.decode(remaining));
         }
 
-        return target;
+        return builder.build();
     }
 
     /**
@@ -78,7 +79,7 @@ final class DefaultURLParser implements URLParser {
      * <p>
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected String parseScheme(String remaining, URL target) throws MalformedURLException {
+    protected String parseScheme(String remaining, URLBuilder builder) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
             char c = remaining.charAt(i);
             if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
@@ -87,7 +88,7 @@ final class DefaultURLParser implements URLParser {
                 if (i == 0) {
                     throw new MalformedURLException("missing scheme");
                 }
-                target.scheme = remaining.substring(0, i).toLowerCase();
+                builder.setScheme(remaining.substring(0, i).toLowerCase());
                 remaining = remaining.substring(i + 1, remaining.length());
                 return remaining;
             } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
@@ -104,20 +105,20 @@ final class DefaultURLParser implements URLParser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected void parseAuthority(String authority, URL target) throws MalformedURLException {
+    protected void parseAuthority(String authority, URLBuilder builder) throws MalformedURLException {
         int i = authority.lastIndexOf('@');
         if (i >= 0) {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                target.username = PercentEncoder.decode(parts[0]);
-                target.password = PercentEncoder.decode(parts[1]);
+                builder.setUsername(PercentEncoder.decode(parts[0]));
+                builder.setPassword(PercentEncoder.decode(parts[1]));
             } else {
-                target.username = PercentEncoder.decode(credentials);
+                builder.setUsername(PercentEncoder.decode(credentials));
             }
             authority = authority.substring(i + 1, authority.length());
         }
-        parseHost(authority, target);
+        parseHost(authority, builder);
     }
 
     /**
@@ -126,7 +127,7 @@ final class DefaultURLParser implements URLParser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected void parseHost(String str, URL target) throws MalformedURLException {
+    protected void parseHost(String str, URLBuilder builder) throws MalformedURLException {
         if (str.startsWith("[")) {
             int i = str.lastIndexOf("]");
             if (i < 0) {
@@ -149,9 +150,9 @@ final class DefaultURLParser implements URLParser {
                 }
             }
         }
-        String ht = PercentEncoder.decode(str.toLowerCase());
-        if (!ht.isEmpty()) {
-            target.host = ht;
+        String host = PercentEncoder.decode(str.toLowerCase());
+        if (!host.isEmpty()) {
+            builder.setHost(host);
         }
     }
 
