@@ -27,6 +27,11 @@ final class PercentEncoder {
     private static final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
 
     /**
+     * Character set for Hex Strings
+     */
+    private static final String hexSet = "0123456789ABCDEF";
+
+    /**
      * Disallow instantiation of class.
      */
     private PercentEncoder() {
@@ -121,7 +126,7 @@ final class PercentEncoder {
             for (int j = 0; j < readBytes; j++) {
                 char c = (char) bytes[i];
                 if (shouldEscapeChar(c, zone)) {
-                    result += "%" + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) >> 4) + "0123456789ABCDEF".charAt((bytes[i] & 0xFF) & 15);
+                    result += "%" + hexSet.charAt((bytes[i] & 0xFF) >> 4) + hexSet.charAt((bytes[i] & 0xFF) & 15);
                 } else {
                     result += c;
                 }
