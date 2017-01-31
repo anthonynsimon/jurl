@@ -93,7 +93,7 @@ final class DefaultURLParser implements URLParser {
      * <p>
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected PartialParseResult parseScheme(String remaining) throws MalformedURLException {
+    private PartialParseResult parseScheme(String remaining) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
             char c = remaining.charAt(i);
             if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
@@ -119,7 +119,7 @@ final class DefaultURLParser implements URLParser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected UserInfoResult parseUserInfo(String str) throws MalformedURLException {
+    private UserInfoResult parseUserInfo(String str) throws MalformedURLException {
         int i = str.lastIndexOf('@');
         String username = null;
         String password = null;
@@ -144,7 +144,7 @@ final class DefaultURLParser implements URLParser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected PartialParseResult parseHost(String str) throws MalformedURLException {
+    private PartialParseResult parseHost(String str) throws MalformedURLException {
         if (str.startsWith("[")) {
             int i = str.lastIndexOf("]");
             if (i < 0) {
