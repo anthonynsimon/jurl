@@ -46,25 +46,39 @@ final class DefaultURLParser implements URLParser {
             remaining = remaining.substring(0, index);
         }
 
-        remaining = parseScheme(remaining, builder);
+        PartialParseResult parsedScheme = parseScheme(remaining);
+        String scheme = parsedScheme.result;
+        boolean hasScheme = scheme != null && !scheme.isEmpty();
+        builder.setScheme(scheme);
+        remaining = parsedScheme.remaining;
 
-        String scheme = builder.getScheme();
-        if (scheme != null && !scheme.isEmpty()) {
+        if (hasScheme) {
             if (!remaining.startsWith("/")) {
                 builder.setOpaque(remaining);
                 return builder.build();
             }
         }
-        if (((scheme != null && !scheme.isEmpty()) || !remaining.startsWith("///")) && remaining.startsWith("//")) {
+        if ((hasScheme || !remaining.startsWith("///")) && remaining.startsWith("//")) {
             remaining = remaining.substring(2, remaining.length());
+
+            String authority = remaining;
             int i = remaining.indexOf("/");
             if (i >= 0) {
-                parseAuthority(remaining.substring(0, i), builder);
+                authority = remaining.substring(0, i);
                 remaining = remaining.substring(i, remaining.length());
             } else {
-                parseAuthority(remaining, builder);
                 remaining = "";
             }
+
+            if (!authority.isEmpty()) {
+                UserInfoResult userInfoResult = parseUserInfo(authority);
+                builder.setUsername(userInfoResult.user);
+                builder.setPassword(userInfoResult.password);
+                authority = userInfoResult.remaining;
+            }
+
+            PartialParseResult hostResult = parseHost(authority);
+            builder.setHost(hostResult.result);
         }
 
         if (!remaining.isEmpty()) {
@@ -79,7 +93,7 @@ final class DefaultURLParser implements URLParser {
      * <p>
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected String parseScheme(String remaining, URLBuilder builder) throws MalformedURLException {
+    protected PartialParseResult parseScheme(String remaining) throws MalformedURLException {
         for (int i = 0; i < remaining.length(); i++) {
             char c = remaining.charAt(i);
             if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
@@ -88,16 +102,16 @@ final class DefaultURLParser implements URLParser {
                 if (i == 0) {
                     throw new MalformedURLException("missing scheme");
                 }
-                builder.setScheme(remaining.substring(0, i).toLowerCase());
+                String scheme = remaining.substring(0, i).toLowerCase();
                 remaining = remaining.substring(i + 1, remaining.length());
-                return remaining;
+                return new PartialParseResult(scheme, remaining);
             } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
                 if (i == 0) {
-                    return remaining;
+                    return new PartialParseResult("", remaining);
                 }
             }
         }
-        return remaining;
+        return new PartialParseResult("", remaining);
     }
 
     /**
@@ -105,20 +119,23 @@ final class DefaultURLParser implements URLParser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected void parseAuthority(String authority, URLBuilder builder) throws MalformedURLException {
-        int i = authority.lastIndexOf('@');
+    protected UserInfoResult parseUserInfo(String str) throws MalformedURLException {
+        int i = str.lastIndexOf('@');
+        String username = null;
+        String password = null;
         if (i >= 0) {
-            String credentials = authority.substring(0, i);
+            String credentials = str.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                builder.setUsername(PercentEncoder.decode(parts[0]));
-                builder.setPassword(PercentEncoder.decode(parts[1]));
+                username = PercentEncoder.decode(parts[0]);
+                password = PercentEncoder.decode(parts[1]);
             } else {
-                builder.setUsername(PercentEncoder.decode(credentials));
+                username = PercentEncoder.decode(credentials);
             }
-            authority = authority.substring(i + 1, authority.length());
+            str = str.substring(i + 1, str.length());
         }
-        parseHost(authority, builder);
+
+        return new UserInfoResult(username, password, str);
     }
 
     /**
@@ -127,7 +144,7 @@ final class DefaultURLParser implements URLParser {
      *
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
-    protected void parseHost(String str, URLBuilder builder) throws MalformedURLException {
+    protected PartialParseResult parseHost(String str) throws MalformedURLException {
         if (str.startsWith("[")) {
             int i = str.lastIndexOf("]");
             if (i < 0) {
@@ -150,10 +167,7 @@ final class DefaultURLParser implements URLParser {
                 }
             }
         }
-        String host = PercentEncoder.decode(str.toLowerCase());
-        if (!host.isEmpty()) {
-            builder.setHost(host);
-        }
+        return new PartialParseResult(PercentEncoder.decode(str.toLowerCase()), "");
     }
 
     /**
@@ -184,5 +198,29 @@ final class DefaultURLParser implements URLParser {
             return false;
         }
         return true;
+    }
+
+    private class PartialParseResult {
+        public final String result;
+        public final String remaining;
+
+
+        public PartialParseResult(String result, String remaining) {
+            this.result = result;
+            this.remaining = remaining;
+        }
+    }
+
+    private class UserInfoResult {
+        public final String user;
+        public final String password;
+        public final String remaining;
+
+
+        public UserInfoResult(String user, String password, String remaining) {
+            this.user = user;
+            this.password = password;
+            this.remaining = remaining;
+        }
     }
 }
