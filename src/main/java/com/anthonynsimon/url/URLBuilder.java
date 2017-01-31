@@ -3,7 +3,7 @@ package com.anthonynsimon.url;
 /**
  * URLBuilder is a helper class for the construction of a URL object.
  */
-class URLBuilder {
+final class URLBuilder {
     private String scheme;
     private String username;
     private String password;
@@ -17,17 +17,9 @@ class URLBuilder {
         return new URL(scheme, username, password, host, path, query, fragment, opaque);
     }
 
-    public String getScheme() {
-        return scheme;
-    }
-
     public URLBuilder setScheme(String scheme) {
         this.scheme = scheme;
         return this;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public URLBuilder setUsername(String username) {
@@ -35,17 +27,9 @@ class URLBuilder {
         return this;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public URLBuilder setPassword(String password) {
         this.password = password;
         return this;
-    }
-
-    public String getHost() {
-        return host;
     }
 
     public URLBuilder setHost(String host) {
@@ -53,17 +37,9 @@ class URLBuilder {
         return this;
     }
 
-    public String getPath() {
-        return path;
-    }
-
     public URLBuilder setPath(String path) {
         this.path = path;
         return this;
-    }
-
-    public String getQuery() {
-        return query;
     }
 
     public URLBuilder setQuery(String query) {
@@ -71,17 +47,9 @@ class URLBuilder {
         return this;
     }
 
-    public String getFragment() {
-        return fragment;
-    }
-
     public URLBuilder setFragment(String fragment) {
         this.fragment = fragment;
         return this;
-    }
-
-    public String getOpaque() {
-        return opaque;
     }
 
     public URLBuilder setOpaque(String opaque) {
