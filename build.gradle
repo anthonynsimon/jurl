@@ -1,5 +1,5 @@
 group 'com.anthonynsimon.url'
-version '0.1.0'
+version '0.2.1'
 
 apply plugin: 'java'
 apply plugin: 'jacoco'

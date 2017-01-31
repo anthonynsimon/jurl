@@ -8,12 +8,12 @@ Fast and simple URL parsing for Java with UTF-8 support.
 
 ## Why
 - Easy to use API - you just want to parse a URL after all.
-- Fast - 5+ million URLs per second on commodity hardware.
+- Fast, 4+ million URLs per second on commodity hardware.
 - UTF-8 encoding and decoding.
 - Supports path resolving between URLs (absolute and relative).
-- Good test coverage (94%) with plenty of edge cases.
+- Good test coverage (~94%) with plenty of edge cases.
 - Supports IPv4 and IPv6.
-- No dependencies.
+- No external dependencies.
 
 ## Getting Started
 
@@ -39,7 +39,7 @@ ref.getQueryPairs(); // Map<String, String> = {search=germany, language=de_DE}
 URL resolved = base.resolveReference(ref); // https://user:secret@example♬.com/path/to/file.html?search=germany&language=de_DE
 resolved.getPath(); // /path/to/file.html
 
-// Escape UTF-8 result
+// Escaped UTF-8 result
 resolved.toString(); // https://user:secret@example%E2%99%AC.com/path/to/file.html?search=germany&language=de_DE
 
 ```
@@ -71,7 +71,7 @@ For maven:
 For gradle:
 ```
 dependencies {
-    compile 'com.github.anthonynsimon:jurl:v0.1.1'
+    compile 'com.github.anthonynsimon:jurl:v0.2.1'
 }
 ```
 
@@ -81,7 +81,7 @@ For maven:
     <dependency>
         <groupId>com.github.anthonynsimon</groupId>
         <artifactId>jurl</artifactId>
-        <version>v0.1.1</version>
+        <version>v0.2.1</version>
     </dependency>
 </dependencies>
 ```
