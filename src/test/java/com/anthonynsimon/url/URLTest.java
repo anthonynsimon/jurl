@@ -997,149 +997,6 @@ public class URLTest {
             ),
     };
 
-    private PathResolveTestCase[] pathResolveCases = new PathResolveTestCase[]{
-            new PathResolveTestCase(
-                    "",
-                    "",
-                    ""
-            ),
-            new PathResolveTestCase(
-                    "abc",
-                    "",
-                    "/abc"
-            ),
-            new PathResolveTestCase(
-                    "abc",
-                    "456",
-                    "/456"
-            ),
-            new PathResolveTestCase(
-                    "/abc",
-                    "123",
-                    "/123"
-            ),
-            new PathResolveTestCase(
-                    "/abc/abc",
-                    "/123",
-                    "/123"
-            ),
-            new PathResolveTestCase(
-                    "abc/def",
-                    ".",
-                    "/abc/"
-            ),
-            new PathResolveTestCase(
-                    "abc/def",
-                    "123",
-                    "/abc/123"
-            ),
-            new PathResolveTestCase(
-                    "abc/def",
-                    "..",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "abc/",
-                    "..",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "abc/",
-                    "../..",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "abc/def/hij",
-                    "..",
-                    "/abc/"
-            ),
-            new PathResolveTestCase(
-                    "abc/def/hij",
-                    ".",
-                    "/abc/def/"
-            ),
-            new PathResolveTestCase(
-                    "abc/def/hij",
-                    "../123",
-                    "/abc/123"
-            ),
-            new PathResolveTestCase(
-                    "abc/def/hij",
-                    ".././123",
-                    "/abc/123"
-            ),
-            new PathResolveTestCase(
-                    "abc/def/hij",
-                    "../../123",
-                    "/123"
-            ),
-            new PathResolveTestCase(
-                    "abc/def/hij",
-                    "./../123",
-                    "/abc/123"
-            ),
-            new PathResolveTestCase(
-                    "abc/../hij",
-                    "",
-                    "/hij"
-            ),
-            new PathResolveTestCase(
-                    "abc/hij",
-                    "./..",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "abc/./hij",
-                    ".",
-                    "/abc/"
-            ),
-            new PathResolveTestCase(
-                    "abc/./hij",
-                    "",
-                    "/abc/hij"
-            ),
-            new PathResolveTestCase(
-                    "abc/../hij",
-                    "",
-                    "/hij"
-            ),
-            new PathResolveTestCase(
-                    "abc/../hij",
-                    ".",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "",
-                    "../../../././../",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "../../../././../",
-                    "../../../././../",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "../////../.././/./../",
-                    "../../../././../",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "abc",
-                    "////",
-                    "/"
-            ),
-            new PathResolveTestCase(
-                    "/////",
-                    "abc",
-                    "/abc"
-            ),
-            new PathResolveTestCase(
-                    "abc/.././123",
-                    "x",
-                    "/x"
-            ),
-    };
-
     private QueryStringTestCase[] queryStringCases = new QueryStringTestCase[]{
             new QueryStringTestCase(
                     "http://example.com",
@@ -1316,16 +1173,16 @@ public class URLTest {
 
     @Test
     public void testIsPortValid() throws MalformedURLException {
-        Assert.assertFalse(new DefaultParser().isPortValid("12345"));
-        Assert.assertFalse(new DefaultParser().isPortValid("abcde"));
-        Assert.assertFalse(new DefaultParser().isPortValid(":abcde"));
-        Assert.assertFalse(new DefaultParser().isPortValid(":"));
-        Assert.assertFalse(new DefaultParser().isPortValid(":::"));
-        Assert.assertFalse(new DefaultParser().isPortValid("123:456"));
+        Assert.assertFalse(new DefaultURLParser().isPortValid("12345"));
+        Assert.assertFalse(new DefaultURLParser().isPortValid("abcde"));
+        Assert.assertFalse(new DefaultURLParser().isPortValid(":abcde"));
+        Assert.assertFalse(new DefaultURLParser().isPortValid(":"));
+        Assert.assertFalse(new DefaultURLParser().isPortValid(":::"));
+        Assert.assertFalse(new DefaultURLParser().isPortValid("123:456"));
 
-        Assert.assertTrue(new DefaultParser().isPortValid(":1234"));
-        Assert.assertTrue(new DefaultParser().isPortValid(":888888"));
-        Assert.assertTrue(new DefaultParser().isPortValid(":443"));
+        Assert.assertTrue(new DefaultURLParser().isPortValid(":1234"));
+        Assert.assertTrue(new DefaultURLParser().isPortValid(":888888"));
+        Assert.assertTrue(new DefaultURLParser().isPortValid(":443"));
     }
 
 
@@ -1367,13 +1224,6 @@ public class URLTest {
         }
     }
 
-    @Test
-    public void testResolvePath() throws Exception {
-        for (PathResolveTestCase testCase : pathResolveCases) {
-            String resolved = PathResolver.resolve(testCase.inputBase, testCase.inputReference);
-            Assert.assertEquals(testCase.expected, resolved);
-        }
-    }
 
     @Test
     public void testHashCode() throws Exception {
@@ -1407,11 +1257,6 @@ public class URLTest {
     @Test(expected = MalformedURLException.class)
     public void testMissingScheme() throws Exception {
         URL url = URL.parse(":http://www.domain.com/path");
-    }
-
-    @Test(expected = MalformedURLException.class)
-    public void testUnescapeInvalidHex() throws Exception {
-        new PercentEscaper().unescape("http://www.domain.com/path%C3%##");
     }
 
 
@@ -1466,18 +1311,6 @@ public class URLTest {
             this.inputBase = inputBase;
             this.inputReference = inputReference;
             this.expectedResolvedReference = expectedResolvedReference;
-        }
-    }
-
-    private class PathResolveTestCase {
-        public String inputBase;
-        public String inputReference;
-        public String expected;
-
-        public PathResolveTestCase(String inputBase, String inputReference, String expected) {
-            this.inputBase = inputBase;
-            this.inputReference = inputReference;
-            this.expected = expected;
         }
     }
 

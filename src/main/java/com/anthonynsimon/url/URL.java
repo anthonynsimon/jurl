@@ -19,7 +19,16 @@ import java.util.Map;
  */
 public final class URL implements Serializable {
 
+    /**
+     * Unique ID for serialization purposes.
+     */
     static final long serialVersionUID = 80443L;
+
+    /**
+     * URLParser to be used to parse the URL string into the URL object.
+     * Do not serialize.
+     */
+    private transient final static URLParser URL_PARSER = new DefaultURLParser();
 
     protected String scheme;
     protected String username;
@@ -30,10 +39,22 @@ public final class URL implements Serializable {
     protected String fragment;
     protected String opaque;
 
-    protected transient Map<String, String> parsedQueryPairs;
+    /**
+     * Cached parsed query string key-value pairs.
+     * Do not serialize.
+     */
+    private transient Map<String, String> parsedQueryPairs;
 
-    private transient final static Parser parser = new DefaultParser();
+    /**
+     * Cached string representation of the URL.
+     * Do not serialize.
+     */
+    private transient String stringRepresentation;
 
+
+    /**
+     * Protect instantiation of class. Use public parse method instead to construct URLs.
+     */
     protected URL() {
     }
 
@@ -41,7 +62,7 @@ public final class URL implements Serializable {
      * Returns a new URL object after parsing the provided URL string.
      */
     public static URL parse(String url) throws MalformedURLException {
-        return parser.parse(url);
+        return URL_PARSER.parse(url);
     }
 
     /**
@@ -153,6 +174,10 @@ public final class URL implements Serializable {
      */
     @Override
     public String toString() {
+        if (stringRepresentation != null) {
+            return stringRepresentation;
+        }
+
         StringBuffer sb = new StringBuffer();
         if (!nullOrEmpty(scheme)) {
             sb.append(scheme);
@@ -164,22 +189,22 @@ public final class URL implements Serializable {
             if (!nullOrEmpty(scheme) || !nullOrEmpty(host)) {
                 sb.append("//");
                 if (!nullOrEmpty(username)) {
-                    sb.append(PercentEscaper.escape(username, URLPart.CREDENTIALS));
+                    sb.append(PercentEncoder.encode(username, URLPart.CREDENTIALS));
                     if (!nullOrEmpty(password)) {
                         sb.append(":");
-                        sb.append(PercentEscaper.escape(password, URLPart.CREDENTIALS));
+                        sb.append(PercentEncoder.encode(password, URLPart.CREDENTIALS));
                     }
                     sb.append("@");
                 }
                 if (!nullOrEmpty(host)) {
-                    sb.append(PercentEscaper.escape(host, URLPart.HOST));
+                    sb.append(PercentEncoder.encode(host, URLPart.HOST));
                 }
             }
             if (!nullOrEmpty(path)) {
                 if (!path.startsWith("/") && !path.equals("*")) {
                     sb.append("/");
                 }
-                sb.append(PercentEscaper.escape(path, URLPart.PATH));
+                sb.append(PercentEncoder.encode(path, URLPart.PATH));
             }
         }
         if (!nullOrEmpty(query)) {
@@ -190,11 +215,14 @@ public final class URL implements Serializable {
             sb.append("#");
             sb.append(fragment);
         }
-        return sb.toString();
+
+        stringRepresentation = sb.toString();
+
+        return stringRepresentation;
     }
 
     /**
-     * Returns the hashCode of the string representation of the URL.
+     * Returns the hash code of the URL.
      */
     @Override
     public int hashCode() {
@@ -223,7 +251,7 @@ public final class URL implements Serializable {
     }
 
     public URL resolveReference(String ref) throws MalformedURLException, InvalidURLReferenceException {
-        URL url = parser.parse(ref);
+        URL url = URL_PARSER.parse(ref);
         return resolveReference(url);
     }
 

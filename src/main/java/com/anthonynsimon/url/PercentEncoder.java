@@ -6,12 +6,12 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * PercentEscaper is an escaper that handles the escaping and unescaping of characters in URLs.
+ * PercentEncoder handles the escaping and unescaping of characters in URLs.
  * It escapes character based on the context (part of the URL) that is being dealt with.
  * <p>
  * Supports UTF-8 escaping and unescaping.
  */
-final class PercentEscaper {
+final class PercentEncoder {
 
     /**
      * Reserved characters, allowed in certain parts of the URL. Must be escaped in most cases.
@@ -25,6 +25,12 @@ final class PercentEscaper {
      * Byte masks to aid in the decoding of UTF-8 byte arrays.
      */
     private static final short[] utf8Masks = new short[]{0b00000000, 0b11000000, 0b11100000, 0b11110000};
+
+    /**
+     * Disallow instantiation of class.
+     */
+    private PercentEncoder() {
+    }
 
     /**
      * Returns true if escaping is required based on the character and encode zone provided.
@@ -93,7 +99,7 @@ final class PercentEscaper {
      * Returns a percent-escaped string. Each character will be evaluated in case it needs to be escaped
      * based on the provided EncodeZone.
      */
-    public static String escape(String str, URLPart zone) {
+    public static String encode(String str, URLPart zone) {
         // The string might not need escaping at all, check first.
         if (!needsEscaping(str, zone)) {
             return str;
@@ -131,7 +137,7 @@ final class PercentEscaper {
      *
      * @throws MalformedURLException if an invalid escape sequence is found.
      */
-    public static String unescape(String str) throws MalformedURLException {
+    public static String decode(String str) throws MalformedURLException {
         // The string might not need unescaping at all, check first.
         if (!needsUnescaping(str)) {
             return str;
@@ -212,5 +218,4 @@ final class PercentEscaper {
         }
         return result;
     }
-
 }

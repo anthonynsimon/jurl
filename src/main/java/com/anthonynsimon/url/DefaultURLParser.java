@@ -3,11 +3,11 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 /**
- * A default parser implementation.
+ * A default URL parser implementation.
  */
-final class DefaultParser implements Parser {
+final class DefaultURLParser implements URLParser {
 
-    public DefaultParser() {
+    public DefaultURLParser() {
     }
 
     /**
@@ -67,7 +67,7 @@ final class DefaultParser implements Parser {
         }
 
         if (!remaining.isEmpty()) {
-            target.path = PercentEscaper.unescape(remaining);
+            target.path = PercentEncoder.decode(remaining);
         }
 
         return target;
@@ -110,10 +110,10 @@ final class DefaultParser implements Parser {
             String credentials = authority.substring(0, i);
             if (credentials.contains(":")) {
                 String[] parts = credentials.split(":", 2);
-                target.username = PercentEscaper.unescape(parts[0]);
-                target.password = PercentEscaper.unescape(parts[1]);
+                target.username = PercentEncoder.decode(parts[0]);
+                target.password = PercentEncoder.decode(parts[1]);
             } else {
-                target.username = PercentEscaper.unescape(credentials);
+                target.username = PercentEncoder.decode(credentials);
             }
             authority = authority.substring(i + 1, authority.length());
         }
@@ -149,7 +149,7 @@ final class DefaultParser implements Parser {
                 }
             }
         }
-        String ht = PercentEscaper.unescape(str.toLowerCase());
+        String ht = PercentEncoder.decode(str.toLowerCase());
         if (!ht.isEmpty()) {
             target.host = ht;
         }

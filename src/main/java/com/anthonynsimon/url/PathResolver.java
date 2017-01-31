@@ -15,6 +15,9 @@ import java.util.List;
  */
 final class PathResolver {
 
+    /**
+     * Disallow instantiation of class.
+     */
     private PathResolver() {
     }
 

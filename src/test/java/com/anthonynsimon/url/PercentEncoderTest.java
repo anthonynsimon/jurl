@@ -4,7 +4,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class EncodingTest {
+public class PercentEncoderTest {
 
     private EncodingTestCase[] escapeCases = new EncodingTestCase[]{
             new EncodingTestCase("", ""),
@@ -44,30 +44,35 @@ public class EncodingTest {
     @Test
     public void testEscaping() throws Exception {
         for (EncodingTestCase testCase : escapeCases) {
-            Assert.assertEquals(testCase.expectedOutput, new PercentEscaper().escape(testCase.input, URLPart.ENCODE_ZONE));
+            Assert.assertEquals(testCase.expectedOutput, PercentEncoder.encode(testCase.input, URLPart.ENCODE_ZONE));
         }
     }
 
     @Test
     public void testUnescaping() throws Exception {
         for (EncodingTestCase testCase : unescapeCases) {
-            Assert.assertEquals(testCase.expectedOutput, new PercentEscaper().unescape(testCase.input));
+            Assert.assertEquals(testCase.expectedOutput, PercentEncoder.decode(testCase.input));
         }
     }
 
     @Test(expected = MalformedURLException.class)
+    public void testUnescapeInvalidHex() throws Exception {
+        PercentEncoder.decode("http://www.domain.com/path%C3%##");
+    }
+
+    @Test(expected = MalformedURLException.class)
     public void testMalformedUnescape() throws Exception {
-        new PercentEscaper().unescape("_______%");
+        PercentEncoder.decode("_______%");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescapeWithUnicodeMultiple() throws Exception {
-        new PercentEscaper().unescape("!__!__%Ƿabasda");
+        PercentEncoder.decode("!__!__%Ƿabasda");
     }
 
     @Test(expected = MalformedURLException.class)
     public void testMalformedUnescapeWithUnicodeSingle() throws Exception {
-        new PercentEscaper().unescape("!__!__%Ƿ");
+        PercentEncoder.decode("!__!__%Ƿ");
     }
 
     class EncodingTestCase {

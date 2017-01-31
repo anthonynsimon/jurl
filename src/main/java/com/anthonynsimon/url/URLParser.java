@@ -3,9 +3,9 @@ package com.anthonynsimon.url;
 import com.anthonynsimon.url.exceptions.MalformedURLException;
 
 /**
- * Parser handles the parsing of a URL string into a URL object.
+ * URLParser handles the parsing of a URL string into a URL object.
  */
-interface Parser {
+interface URLParser {
     /**
      * Returns a the URL with the new values after parsing the provided URL string.
      */
