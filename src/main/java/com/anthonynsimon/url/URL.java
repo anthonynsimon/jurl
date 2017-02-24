@@ -113,14 +113,14 @@ public final class URL implements Serializable {
     }
 
     /**
-     * Returns the query ('?q=foo&bar') of the URL if it exists.
+     * Returns the query ('?q=foo{@literal &}bar') of the URL if it exists.
      */
     public String getQuery() {
         return query;
     }
 
     /**
-     * Returns the fragment ('#foo&bar') of the URL if it exists.
+     * Returns the fragment ('#foo{@literal &}bar') of the URL if it exists.
      */
     public String getFragment() {
         return fragment;
@@ -282,7 +282,7 @@ public final class URL implements Serializable {
      *
      * @throws InvalidURLReferenceException if the provided ref URL is invalid or if the base URL is not absolute.
      */
-    public URL resolveReference(URL ref) throws InvalidURLReferenceException, MalformedURLException {
+    public URL resolveReference(URL ref) throws InvalidURLReferenceException {
         if (!isAbsolute()) {
             throw new InvalidURLReferenceException("base url is not absolute");
         }
