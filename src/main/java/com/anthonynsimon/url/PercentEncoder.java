@@ -91,13 +91,7 @@ final class PercentEncoder {
     }
 
     private static boolean needsUnescaping(String str) {
-        char[] chars = str.toCharArray();
-        for (char c : chars) {
-            if (c == '%') {
-                return true;
-            }
-        }
-        return false;
+        return (str.indexOf('%') >= 0);
     }
 
     /**

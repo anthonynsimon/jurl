@@ -94,24 +94,23 @@ final class DefaultURLParser implements URLParser {
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private PartialParseResult parseScheme(String remaining) throws MalformedURLException {
-        for (int i = 0; i < remaining.length(); i++) {
-            char c = remaining.charAt(i);
-            if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z') {
-                continue;
-            } else if (c == ':') {
-                if (i == 0) {
-                    throw new MalformedURLException("missing scheme");
-                }
-                String scheme = remaining.substring(0, i).toLowerCase();
-                remaining = remaining.substring(i + 1, remaining.length());
-                return new PartialParseResult(scheme, remaining);
-            } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
-                if (i == 0) {
-                    return new PartialParseResult("", remaining);
-                }
-            }
+        int indexColon = remaining.indexOf(':');
+        if (indexColon == 0) {
+            throw new MalformedURLException("missing scheme");
         }
-        return new PartialParseResult("", remaining);
+        if (indexColon < 0) {
+            return new PartialParseResult("", remaining);
+        }
+
+        // if first char is special then its not a scheme
+        char first = remaining.charAt(0);
+        if ('0' <= first && first <= '9' || first == '+' || first == '-' || first == '.') {
+            return new PartialParseResult("", remaining);
+        }
+
+        String scheme = remaining.substring(0, indexColon).toLowerCase();
+        remaining = remaining.substring(indexColon + 1, remaining.length());
+        return new PartialParseResult(scheme, remaining);
     }
 
     /**
