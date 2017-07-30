@@ -1,9 +1,14 @@
+plugins {
+  id 'me.champeau.gradle.jmh' version '0.4.4'
+}
+
 group 'com.anthonynsimon.url'
 version '0.2.3'
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven'
+apply plugin: 'me.champeau.gradle.jmh'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -20,6 +25,13 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+jmh {
+    include = '.*BenchmarkDefaultURLParser.*'
+    jmhVersion = '1.19'
+    jvmArgsAppend = '-Xmx1g'
+    profilers = [ ]
 }
 
 jacocoTestReport {
