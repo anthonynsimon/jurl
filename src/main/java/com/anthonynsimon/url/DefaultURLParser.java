@@ -21,7 +21,7 @@ final class DefaultURLParser implements URLParser {
         URLBuilder builder = new URLBuilder();
         String remaining = rawUrl;
 
-        int index = remaining.lastIndexOf("#");
+        int index = remaining.lastIndexOf('#');
         if (index >= 0) {
             String frag = remaining.substring(index + 1, remaining.length());
             builder.setFragment(frag.isEmpty() ? null : frag);
@@ -37,7 +37,7 @@ final class DefaultURLParser implements URLParser {
             return builder.build();
         }
 
-        index = remaining.indexOf("?");
+        index = remaining.indexOf('?');
         if (index > 0) {
             String qr = remaining.substring(index + 1, remaining.length());
             if (!qr.isEmpty()) {
@@ -53,7 +53,7 @@ final class DefaultURLParser implements URLParser {
         remaining = parsedScheme.remaining;
 
         if (hasScheme) {
-            if (!remaining.startsWith("/")) {
+            if (remaining.charAt(0) != '/') {
                 builder.setOpaque(remaining);
                 return builder.build();
             }
@@ -62,7 +62,7 @@ final class DefaultURLParser implements URLParser {
             remaining = remaining.substring(2, remaining.length());
 
             String authority = remaining;
-            int i = remaining.indexOf("/");
+            int i = remaining.indexOf('/');
             if (i >= 0) {
                 authority = remaining.substring(0, i);
                 remaining = remaining.substring(i, remaining.length());
@@ -124,7 +124,7 @@ final class DefaultURLParser implements URLParser {
         String password = null;
         if (i >= 0) {
             String credentials = str.substring(0, i);
-            if (credentials.contains(":")) {
+            if (credentials.indexOf(':') >= 0) {
                 String[] parts = credentials.split(":", 2);
                 username = PercentEncoder.decode(parts[0]);
                 password = PercentEncoder.decode(parts[1]);
@@ -144,8 +144,11 @@ final class DefaultURLParser implements URLParser {
      * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private PartialParseResult parseHost(String str) throws MalformedURLException {
-        if (str.startsWith("[")) {
-            int i = str.lastIndexOf("]");
+        if (str.length() == 0) {
+            return new PartialParseResult("", "");
+        }
+        if (str.charAt(0) == '[') {
+            int i = str.lastIndexOf(']');
             if (i < 0) {
                 throw new MalformedURLException("IPv6 detected, but missing closing ']' token");
             }
@@ -154,15 +157,17 @@ final class DefaultURLParser implements URLParser {
                 throw new MalformedURLException("invalid port");
             }
         } else {
-            String[] parts = str.split(":", -1);
-            if (parts.length > 2) {
-                throw new MalformedURLException("invalid host: " + parts.toString());
-            }
-            if (parts.length == 2) {
-                try {
-                    Integer.valueOf(parts[1]);
-                } catch (NumberFormatException e) {
-                    throw new MalformedURLException("invalid port");
+            if (str.indexOf(':') != -1) {
+                String[] parts = str.split(":", -1);
+                if (parts.length > 2) {
+                    throw new MalformedURLException("invalid host: " + parts.toString());
+                }
+                if (parts.length == 2) {
+                    try {
+                        Integer.valueOf(parts[1]);
+                    } catch (NumberFormatException e) {
+                        throw new MalformedURLException("invalid port");
+                    }
                 }
             }
         }
@@ -185,7 +190,7 @@ final class DefaultURLParser implements URLParser {
         if (portStr == null || portStr.isEmpty()) {
             return true;
         }
-        int i = portStr.indexOf(":");
+        int i = portStr.indexOf(':');
         // Port format must be ':8080'
         if (i != 0) {
             return false;
