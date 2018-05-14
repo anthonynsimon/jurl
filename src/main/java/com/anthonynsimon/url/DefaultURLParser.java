@@ -121,6 +121,7 @@ final class DefaultURLParser implements URLParser {
         int i = str.lastIndexOf('@');
         String username = null;
         String password = null;
+        String rest = str;
         if (i >= 0) {
             String credentials = str.substring(0, i);
             if (credentials.contains(":")) {
@@ -130,10 +131,10 @@ final class DefaultURLParser implements URLParser {
             } else {
                 username = PercentEncoder.decode(credentials);
             }
-            str = str.substring(i + 1, str.length());
+            rest = str.substring(i + 1, str.length());
         }
 
-        return new UserInfoResult(username, password, str);
+        return new UserInfoResult(username, password, rest);
     }
 
     /**
