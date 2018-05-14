@@ -32,7 +32,7 @@ final class DefaultURLParser implements URLParser {
             return builder.build();
         }
 
-        if (remaining.equals("*")) {
+        if ("*".equals(remaining)) {
             builder.setPath("*");
             return builder.build();
         }
