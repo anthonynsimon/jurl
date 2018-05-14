@@ -19,12 +19,31 @@ final class PathResolver {
      * <p>
      * For example:
      * <p>
-     * '/some/path' resolve '..' => '/some'
-     * '/some/path' resolve '.' => '/some/'
-     * '/some/path' resolve './here' => '/some/here'
-     * '/some/path' resolve '../here' => '/here'
+     * resolve("/some/path", "..") == "/some"
+     * resolve("/some/path", ".") == "/some/"
+     * resolve("/some/path", "./here") == "/some/here"
+     * resolve("/some/path", "../here") == "/here"
      */
     public static String resolve(String base, String ref) {
+        String merged = merge(base, ref);
+        if (merged == null || merged.isEmpty()) {
+            return "";
+        }
+        String[] parts = merged.split("/", -1);
+        return resolve(parts);
+    }
+
+    /**
+     * Returns the two path strings merged into one.
+     * <p>
+     * For example:
+     * <qp>
+     * merge("/some/path", "./../hello") == "/some/./../hello"
+     * merge("/some/path/", "./../hello") == "/some/path/./../hello"
+     * merge("/some/path/", "") == "/some/path/"
+     * merge("", "/some/other/path") == "/some/other/path"
+     */
+    private static String merge(String base, String ref) {
         String merged;
 
         if (ref == null || ref.isEmpty()) {
@@ -40,7 +59,21 @@ final class PathResolver {
             return "";
         }
 
-        String[] parts = merged.split("/", -1);
+        return merged;
+    }
+
+    /**
+     * Returns the resolved path parts.
+     * <p>
+     * Example:
+     * <p>
+     * resolve(String[]{"some", "path", "..", "hello"}) == "/some/hello"
+     */
+    private static String resolve(String[] parts) {
+        if (parts.length == 0) {
+            return "";
+        }
+
         List<String> result = new ArrayList<>();
 
         for (int i = 0; i < parts.length; i++) {
@@ -60,17 +93,15 @@ final class PathResolver {
             }
         }
 
-        if (parts.length > 0) {
-            // Get last element, if it was '.' or '..' we need
-            // to end in a slash.
-            switch (parts[parts.length - 1]) {
-                case ".":
-                case "..":
-                    // Add an empty last string, it will be turned into
-                    // a slash when joined together.
-                    result.add("");
-                    break;
-            }
+        // Get last element, if it was '.' or '..' we need
+        // to end in a slash.
+        switch (parts[parts.length - 1]) {
+            case ".":
+            case "..":
+                // Add an empty last string, it will be turned into
+                // a slash when joined together.
+                result.add("");
+                break;
         }
 
         return "/" + String.join("/", result);
