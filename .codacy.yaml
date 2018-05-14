@@ -1,5 +1,5 @@
-engines:
-  exclude_paths:
-    - 'benchmarks/**/*'
-    - 'src/test/**'
-    - 'src/jmh/**'
+---
+exclude_paths:
+  - 'benchmarks/**/*'
+  - 'src/test/**'
+  - 'src/jmh/**'
