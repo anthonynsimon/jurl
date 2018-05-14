@@ -6,10 +6,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
  * A default URL parser implementation.
  */
 final class DefaultURLParser implements URLParser {
-
-    public DefaultURLParser() {
-    }
-
+    
     /**
      * Returns a the URL with the new values after parsing the provided URL string.
      */
@@ -52,7 +49,7 @@ final class DefaultURLParser implements URLParser {
         builder.setScheme(scheme);
         remaining = parsedScheme.remaining;
 
-        if (hasScheme && !remaining.startsWith('/')) {
+        if (hasScheme && remaining.charAt(0) != '/') {
             builder.setOpaque(remaining);
             return builder.build();
         }
