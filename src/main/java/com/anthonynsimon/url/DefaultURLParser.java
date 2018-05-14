@@ -32,7 +32,7 @@ final class DefaultURLParser implements URLParser {
             return builder.build();
         }
 
-        if (remaining.equals("*")) {
+        if ("*".equals(remaining)) {
             builder.setPath("*");
             return builder.build();
         }
@@ -52,11 +52,9 @@ final class DefaultURLParser implements URLParser {
         builder.setScheme(scheme);
         remaining = parsedScheme.remaining;
 
-        if (hasScheme) {
-            if (!remaining.startsWith("/")) {
-                builder.setOpaque(remaining);
-                return builder.build();
-            }
+        if (hasScheme && !remaining.startsWith("/")) {
+            builder.setOpaque(remaining);
+            return builder.build();
         }
         if ((hasScheme || !remaining.startsWith("///")) && remaining.startsWith("//")) {
             remaining = remaining.substring(2, remaining.length());
@@ -90,7 +88,7 @@ final class DefaultURLParser implements URLParser {
 
     /**
      * Parses the scheme from the provided string.
-     * <p>
+     *
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private PartialParseResult parseScheme(String remaining) throws MalformedURLException {
@@ -103,8 +101,8 @@ final class DefaultURLParser implements URLParser {
                     throw new MalformedURLException("missing scheme");
                 }
                 String scheme = remaining.substring(0, i).toLowerCase();
-                remaining = remaining.substring(i + 1, remaining.length());
-                return new PartialParseResult(scheme, remaining);
+                String rest = remaining.substring(i + 1, remaining.length());
+                return new PartialParseResult(scheme, rest);
             } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
                 if (i == 0) {
                     return new PartialParseResult("", remaining);
@@ -123,6 +121,7 @@ final class DefaultURLParser implements URLParser {
         int i = str.lastIndexOf('@');
         String username = null;
         String password = null;
+        String rest = str;
         if (i >= 0) {
             String credentials = str.substring(0, i);
             if (credentials.contains(":")) {
@@ -132,10 +131,10 @@ final class DefaultURLParser implements URLParser {
             } else {
                 username = PercentEncoder.decode(credentials);
             }
-            str = str.substring(i + 1, str.length());
+            rest = str.substring(i + 1, str.length());
         }
 
-        return new UserInfoResult(username, password, str);
+        return new UserInfoResult(username, password, rest);
     }
 
     /**
@@ -157,7 +156,7 @@ final class DefaultURLParser implements URLParser {
         } else {
             String[] parts = str.split(":", -1);
             if (parts.length > 2) {
-                throw new MalformedURLException("invalid host: " + parts.toString());
+                throw new MalformedURLException("invalid host in: " + str);
             }
             if (parts.length == 2) {
                 try {
@@ -191,9 +190,9 @@ final class DefaultURLParser implements URLParser {
         if (i != 0) {
             return false;
         }
-        portStr = portStr.substring(i + 1, portStr.length());
+        String segment = portStr.substring(i + 1, portStr.length());
         try {
-            Integer.valueOf(portStr);
+            Integer.valueOf(segment);
         } catch (NumberFormatException e) {
             return false;
         }

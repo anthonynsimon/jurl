@@ -22,7 +22,7 @@ public final class URL implements Serializable {
     /**
      * Unique ID for serialization purposes.
      */
-    static final long serialVersionUID = 80443L;
+    private static final long serialVersionUID = 80443L;
 
     /**
      * URLParser to be used to parse the URL string into the URL object.

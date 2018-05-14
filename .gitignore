@@ -19,6 +19,7 @@ buildNumber.properties
 
 # All .idea related files
 .idea
+*.iml
 
 # User-specific stuff:
 .idea/workspace.xml
