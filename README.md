@@ -72,7 +72,7 @@ For maven:
 For gradle:
 ```
 dependencies {
-    compile 'com.github.anthonynsimon:jurl:v0.2.3'
+    compile 'com.github.anthonynsimon:jurl:v0.3.0'
 }
 ```
 
@@ -82,7 +82,7 @@ For maven:
     <dependency>
         <groupId>com.github.anthonynsimon</groupId>
         <artifactId>jurl</artifactId>
-        <version>v0.2.3</version>
+        <version>v0.3.0</version>
     </dependency>
 </dependencies>
 ```
