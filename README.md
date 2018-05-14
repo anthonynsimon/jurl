@@ -12,7 +12,7 @@ Fast and simple URL parsing for Java, with UTF-8 and path resolving support. Bas
 - Fast, 4+ million URLs per second on commodity hardware.
 - UTF-8 encoding and decoding.
 - Supports path resolving between URLs (absolute and relative).
-- Good test coverage (~94%) with plenty of edge cases.
+- Good test coverage with plenty of edge cases.
 - Supports IPv4 and IPv6.
 - No external dependencies.
 
