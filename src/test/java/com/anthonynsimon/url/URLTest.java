@@ -103,9 +103,9 @@ public class URLTest {
                     null,
                     "www.example.com",
                     "/",
+                    "?",
                     null,
-                    null,
-                    "http://www.example.com/"
+                    "http://www.example.com/?"
             ),
             // Query string ending in query char
             new URLTestCase(
@@ -1259,6 +1259,12 @@ public class URLTest {
         URL url = URL.parse(":http://www.domain.com/path");
     }
 
+
+    @Test
+    public void testRoundtrip() throws Exception {
+        URL url = URL.parse("http://www.domain.com/?");
+        Assert.assertEquals("http://www.domain.com/?", url.toString());
+    }
 
     @Test
     public void testEquals() throws Exception {
