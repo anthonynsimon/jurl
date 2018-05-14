@@ -220,7 +220,7 @@ public final class URL implements Serializable {
                 }
             }
             if (!nullOrEmpty(path)) {
-                if (!path.startsWith("/") && !path.equals("*")) {
+                if (path.indexOf('/') != 0 && !"*".equals(path)) {
                     sb.append("/");
                 }
                 sb.append(PercentEncoder.encode(path, URLPart.PATH));
