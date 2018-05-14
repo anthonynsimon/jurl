@@ -1,4 +1,5 @@
 # jurl
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e8a7715455e44c73be897eaa131a8054)](https://app.codacy.com/app/anthonynajjars/jurl?utm_source=github.com&utm_medium=referral&utm_content=anthonynsimon/jurl&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/anthonynsimon/jurl.svg?branch=master)](https://travis-ci.org/anthonynsimon/jurl/builds) 
 [![Test Coverage](https://codecov.io/gh/anthonynsimon/jurl/branch/master/graph/badge.svg)](https://codecov.io/gh/anthonynsimon/jurl) 
 [![MIT License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/anthonynsimon/jurl/blob/master/LICENSE)
