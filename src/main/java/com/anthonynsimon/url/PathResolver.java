@@ -48,7 +48,7 @@ final class PathResolver {
 
         if (ref == null || ref.isEmpty()) {
             merged = base;
-        } else if (!(ref.charAt(0) == '/') && base != null && !base.isEmpty()) {
+        } else if (ref.charAt(0) != '/' && base != null && !base.isEmpty()) {
             int i = base.lastIndexOf("/");
             merged = base.substring(0, i + 1) + ref;
         } else {
