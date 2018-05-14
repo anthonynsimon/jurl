@@ -228,7 +228,10 @@ public final class URL implements Serializable {
         }
         if (!nullOrEmpty(query)) {
             sb.append("?");
-            sb.append(query);
+            // Only append '?' if that's all there is to the query string
+            if (!"?".equals(query)) {
+                sb.append(query);
+            }
         }
         if (!nullOrEmpty(fragment)) {
             sb.append("#");

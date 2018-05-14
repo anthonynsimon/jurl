@@ -6,7 +6,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
  * A default URL parser implementation.
  */
 final class DefaultURLParser implements URLParser {
-    
+
     /**
      * Returns a the URL with the new values after parsing the provided URL string.
      */
@@ -39,6 +39,8 @@ final class DefaultURLParser implements URLParser {
             String qr = remaining.substring(index + 1, remaining.length());
             if (!qr.isEmpty()) {
                 builder.setQuery(qr);
+            } else {
+                builder.setQuery("?");
             }
             remaining = remaining.substring(0, index);
         }
