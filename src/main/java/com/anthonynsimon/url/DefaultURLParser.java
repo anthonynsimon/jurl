@@ -52,11 +52,9 @@ final class DefaultURLParser implements URLParser {
         builder.setScheme(scheme);
         remaining = parsedScheme.remaining;
 
-        if (hasScheme) {
-            if (!remaining.startsWith("/")) {
-                builder.setOpaque(remaining);
-                return builder.build();
-            }
+        if (hasScheme && !remaining.startsWith("/")) {
+            builder.setOpaque(remaining);
+            return builder.build();
         }
         if ((hasScheme || !remaining.startsWith("///")) && remaining.startsWith("//")) {
             remaining = remaining.substring(2, remaining.length());
