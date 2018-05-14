@@ -80,6 +80,7 @@ final class DefaultURLParser implements URLParser {
 
         if (!remaining.isEmpty()) {
             builder.setPath(PercentEncoder.decode(remaining));
+            builder.setRawPath(remaining);
         }
 
         return builder.build();

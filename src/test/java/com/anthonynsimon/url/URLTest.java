@@ -45,7 +45,7 @@ public class URLTest {
                     "/path one two&three",
                     null,
                     null,
-                    "http://www.example.com/path%20one%20two&three"
+                    "http://www.example.com/path%20one%20two%26three"
             ),
             // Non - ASCII
             new URLTestCase(
@@ -405,7 +405,7 @@ public class URLTest {
                     "abc/123/xyz",
                     null,
                     null,
-                    "/abc/123/xyz"
+                    "abc/123/xyz"
             ),
             // '*' path
             new URLTestCase(
@@ -585,7 +585,7 @@ public class URLTest {
                     "/foo/bar/baz/quux",
                     "alt=media",
                     null,
-                    "http://rest.rsc.io/foo/bar/baz/quux?alt=media"
+                    "http://rest.rsc.io/foo%2fbar/baz%2Fquux?alt=media"
             ),
             // Commas in host
             new URLTestCase(
@@ -705,6 +705,70 @@ public class URLTest {
                     "search=one+two",
                     "about",
                     "https://user:secret@example%E2%99%AC.com/path/to/my/dir?search=one+two#about"
+            ),
+
+            // Percent encoding in url path
+            new URLTestCase(
+                    "http://abc.net/1160x%3E/quality/",
+                    "http",
+                    null,
+                    null,
+                    "abc.net",
+                    "/1160x>/quality/",
+                    null,
+                    null,
+                    "http://abc.net/1160x%3E/quality/"
+            ),
+
+            // Percent encoding in url path
+            new URLTestCase(
+                    "http://db-engines.com/en/system/PostgreSQL%3BRocksDB",
+                    "http",
+                    null,
+                    null,
+                    "db-engines.com",
+                    "/en/system/PostgreSQL;RocksDB",
+                    null,
+                    null,
+                    "http://db-engines.com/en/system/PostgreSQL%3BRocksDB"
+            ),
+
+            // Percent encoding in url path
+            new URLTestCase(
+                    "http://xzy.org/test/hei%DFfl",
+                    "http",
+                    null,
+                    null,
+                    "xzy.org",
+                    "/test/hei�fl",
+                    null,
+                    null,
+                    "http://xzy.org/test/hei%DFfl"),
+
+            // Percent encoding in url path
+            new URLTestCase(
+                    "http://www.net/decom/category/AA/A_%26_BBB/AAA_%26_BBB/",
+                    "http",
+                    null,
+                    null,
+                    "www.net",
+                    "/decom/category/AA/A_&_BBB/AAA_&_BBB/",
+                    null,
+                    null,
+                    "http://www.net/decom/category/AA/A_%26_BBB/AAA_%26_BBB/"
+            ),
+
+            // Percent encoding in url path
+            new URLTestCase(
+                    "https://en.wikipedia.org/wiki/Eat_one%27s_own_dog_food",
+                    "https",
+                    null,
+                    null,
+                    "en.wikipedia.org",
+                    "/wiki/Eat_one's_own_dog_food",
+                    null,
+                    null,
+                    "https://en.wikipedia.org/wiki/Eat_one%27s_own_dog_food"
             ),
     };
 

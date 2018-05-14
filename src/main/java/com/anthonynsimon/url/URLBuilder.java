@@ -9,12 +9,13 @@ final class URLBuilder {
     private String password;
     private String host;
     private String path;
+    private String rawPath;
     private String query;
     private String fragment;
     private String opaque;
 
     public URL build() {
-        return new URL(scheme, username, password, host, path, query, fragment, opaque);
+        return new URL(scheme, username, password, host, path, rawPath, query, fragment, opaque);
     }
 
     public URLBuilder setScheme(String scheme) {
@@ -39,6 +40,11 @@ final class URLBuilder {
 
     public URLBuilder setPath(String path) {
         this.path = path;
+        return this;
+    }
+
+    public URLBuilder setRawPath(String rawPath) {
+        this.rawPath = rawPath;
         return this;
     }
 
