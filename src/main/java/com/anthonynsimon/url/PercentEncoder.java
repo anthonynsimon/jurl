@@ -73,6 +73,8 @@ final class PercentEncoder {
                         return true;
                     case FRAGMENT:
                         return false;
+                    default:
+                        return true;
                 }
             }
         }
