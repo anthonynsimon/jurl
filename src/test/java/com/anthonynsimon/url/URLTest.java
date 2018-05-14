@@ -1294,12 +1294,14 @@ public class URLTest {
         urlB = URL.parse("http://www.domain.com/path/to/RESOURCE.html?q=abc");
         Assert.assertFalse(urlA.equals(urlB));
 
+        Assert.assertFalse(urlA == null);
         Assert.assertFalse(urlA.equals(null));
-        Assert.assertFalse(urlA.equals("http://www.domain.com/path/to/ANOTHER.html?q=abc"));
-        Assert.assertFalse(urlA.equals(123));
+        Assert.assertFalse("http://www.domain.com/path/to/ANOTHER.html?q=abc".equals(urlA));
+        Assert.assertFalse(new Integer(123).equals(urlA));
 
         urlA = URL.parse("8080");
         Assert.assertFalse(urlA.equals(8080));
+        Assert.assertFalse("8080".equals(urlA));
     }
 
     private class URLReferenceTestCase {
