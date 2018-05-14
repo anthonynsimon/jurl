@@ -88,7 +88,7 @@ final class DefaultURLParser implements URLParser {
 
     /**
      * Parses the scheme from the provided string.
-     * <p>
+     *
      * * @throws MalformedURLException if there was a problem parsing the input string.
      */
     private PartialParseResult parseScheme(String remaining) throws MalformedURLException {
