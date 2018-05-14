@@ -35,6 +35,7 @@ public final class URL implements Serializable {
     private final String password;
     private final String host;
     private final String path;
+    private final String rawPath;
     private final String query;
     private final String fragment;
     private final String opaque;
@@ -61,6 +62,19 @@ public final class URL implements Serializable {
         this.password = mapToNullIfEmpty(password);
         this.host = mapToNullIfEmpty(host);
         this.path = mapToNullIfEmpty(path);
+        this.rawPath = null;
+        this.query = mapToNullIfEmpty(query);
+        this.fragment = mapToNullIfEmpty(fragment);
+        this.opaque = mapToNullIfEmpty(opaque);
+    }
+
+    URL(String scheme, String username, String password, String host, String path, String rawPath, String query, String fragment, String opaque) {
+        this.scheme = mapToNullIfEmpty(scheme);
+        this.username = mapToNullIfEmpty(username);
+        this.password = mapToNullIfEmpty(password);
+        this.host = mapToNullIfEmpty(host);
+        this.path = mapToNullIfEmpty(path);
+        this.rawPath = mapToNullIfEmpty(rawPath);
         this.query = mapToNullIfEmpty(query);
         this.fragment = mapToNullIfEmpty(fragment);
         this.opaque = mapToNullIfEmpty(opaque);
@@ -106,10 +120,18 @@ public final class URL implements Serializable {
     }
 
     /**
-     * Returns the path ('/path/to/my/file.html') of the URL if it exists.
+     * Returns the unescaped path ('/path/to/the;/file.html') of the URL if it exists.
      */
     public String getPath() {
         return path;
+    }
+
+
+    /**
+     * Returns the raw path ('/path/to/the%3B/file.html') of the URL if it exists.
+     */
+    public String getRawPath() {
+        return rawPath;
     }
 
     /**
@@ -219,11 +241,13 @@ public final class URL implements Serializable {
                     sb.append(PercentEncoder.encode(host, URLPart.HOST));
                 }
             }
-            if (!nullOrEmpty(path)) {
+            if (!nullOrEmpty(rawPath)) {
+                sb.append(rawPath);
+            } else if (!nullOrEmpty(path)) {
                 if (path.indexOf('/') != 0 && !"*".equals(path)) {
                     sb.append("/");
                 }
-                sb.append(PercentEncoder.encode(path, URLPart.PATH));
+                sb.append(path);
             }
         }
         if (!nullOrEmpty(query)) {

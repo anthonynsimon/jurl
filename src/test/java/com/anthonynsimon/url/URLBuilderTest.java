@@ -80,5 +80,16 @@ public class URLBuilderTest {
         Assert.assertEquals("/path/to/file.html", url6.toString());
         Assert.assertFalse(url6.isOpaque());
         Assert.assertFalse(url6.isAbsolute());
+
+        URL url7 = new URLBuilder()
+                .setPath("/path/to;/file.html")
+                .setRawPath("/path/to%3B/file.html")
+                .build();
+
+        Assert.assertEquals("/path/to%3B/file.html", url7.toString());
+        Assert.assertFalse(url7.isOpaque());
+        Assert.assertFalse(url7.isAbsolute());
+        Assert.assertEquals("/path/to%3B/file.html", url7.getRawPath());
+        Assert.assertEquals("/path/to;/file.html", url7.getPath());
     }
 }

@@ -173,6 +173,18 @@ final class PercentEncoder {
                 }
                 byte[] buffer = new byte[readBytes];
                 for (int j = 0; j < readBytes; j++) {
+                    if (str.charAt(i) != '%') {
+                        byte[] currentBuffer = new byte[j];
+                        for (int h = 0; h < j; h++) {
+                            currentBuffer[h] = buffer[h];
+                        }
+                        buffer = currentBuffer;
+                        break;
+                    }
+                    if (i + 3 > len) {
+                        buffer = "\uFFFD".getBytes();
+                        break;
+                    }
                     try {
                         buffer[j] = unhex(str.substring(i + 1, i + 3).toCharArray());
                     } catch (InvalidHexException e) {

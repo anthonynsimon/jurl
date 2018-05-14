@@ -28,6 +28,7 @@ public class PercentEncoderTest {
 
     private EncodingTestCase[] unescapeCases = new EncodingTestCase[]{
             new EncodingTestCase("", ""),
+            new EncodingTestCase("www.example.com/%20%DFhei", "www.example.com/ �hei"),
             new EncodingTestCase("www.example.com/%20%C3%BF%20", "www.example.com/ ÿ "),
             new EncodingTestCase("www.example.com/%20%c3%bF%20", "www.example.com/ ÿ "),
             new EncodingTestCase("one%26two%20three", "one&two three"),
