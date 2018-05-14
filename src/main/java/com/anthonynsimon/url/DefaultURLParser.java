@@ -101,8 +101,8 @@ final class DefaultURLParser implements URLParser {
                     throw new MalformedURLException("missing scheme");
                 }
                 String scheme = remaining.substring(0, i).toLowerCase();
-                remaining = remaining.substring(i + 1, remaining.length());
-                return new PartialParseResult(scheme, remaining);
+                String rest = remaining.substring(i + 1, remaining.length());
+                return new PartialParseResult(scheme, rest);
             } else if ('0' <= c && c <= '9' || c == '+' || c == '-' || c == '.') {
                 if (i == 0) {
                     return new PartialParseResult("", remaining);
