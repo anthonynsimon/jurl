@@ -156,7 +156,7 @@ final class DefaultURLParser implements URLParser {
         } else {
             String[] parts = str.split(":", -1);
             if (parts.length > 2) {
-                throw new MalformedURLException("invalid host: " + parts.toString());
+                throw new MalformedURLException("invalid host in: " + str);
             }
             if (parts.length == 2) {
                 try {
