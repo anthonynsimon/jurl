@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.anthonynsimon.url'
-version '0.2.3'
+version '0.3.0'
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
