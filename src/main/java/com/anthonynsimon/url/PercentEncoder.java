@@ -217,9 +217,10 @@ final class PercentEncoder {
 
     private static int pow(int base, int exp) {
         int result = 1;
-        while (exp > 0) {
+        int expRemaining = exp;
+        while (expRemaining > 0) {
             result *= base;
-            exp--;
+            expRemaining--;
         }
         return result;
     }
