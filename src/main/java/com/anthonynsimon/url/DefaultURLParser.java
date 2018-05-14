@@ -190,9 +190,9 @@ final class DefaultURLParser implements URLParser {
         if (i != 0) {
             return false;
         }
-        portStr = portStr.substring(i + 1, portStr.length());
+        String segment = portStr.substring(i + 1, portStr.length());
         try {
-            Integer.valueOf(portStr);
+            Integer.valueOf(segment);
         } catch (NumberFormatException e) {
             return false;
         }
