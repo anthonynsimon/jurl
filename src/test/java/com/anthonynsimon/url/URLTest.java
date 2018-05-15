@@ -5,8 +5,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class URLTest {
 
@@ -1064,86 +1063,98 @@ public class URLTest {
     private QueryStringTestCase[] queryStringCases = new QueryStringTestCase[]{
             new QueryStringTestCase(
                     "http://example.com",
-                    new HashMap<String, String>()
+                    Collections.emptyMap()
             ),
             new QueryStringTestCase(
                     "http://example.com?",
-                    new HashMap<String, String>()
+                    Collections.emptyMap()
             ),
             new QueryStringTestCase(
                     "http://example.com?key=value",
-                    new HashMap<String, String>() {{
-                        put("key", "value");
+                    new HashMap<String, Collection<String>>() {{
+                        put("key", Arrays.asList("value"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?key=",
-                    new HashMap<String, String>()
+                    new HashMap<String, Collection<String>>() {{
+                        put("key", Collections.emptyList());
+                    }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&three=",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
+                        put("three", Collections.emptyList());
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&three",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
+                        put("three", Collections.emptyList());
+                    }}
+            ),
+            new QueryStringTestCase(
+                    "http://example.com?one=uno&two=dos&three=tres&three=drei",
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
+                        put("three", Arrays.asList("tres", "drei"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&=",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&===",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&===&three=tres",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
-                        put("three", "tres");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
+                        put("three", Arrays.asList("tres"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&===&&=&&three=tres",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
-                        put("three", "tres");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
+                        put("three", Arrays.asList("tres"));
                     }}
             ),
             new QueryStringTestCase(
                     "http://example.com?one=uno&two=dos&===&&=&&three=tres#fragment=hello",
-                    new HashMap<String, String>() {{
-                        put("one", "uno");
-                        put("two", "dos");
-                        put("three", "tres");
+                    new HashMap<String, Collection<String>>() {{
+                        put("one", Arrays.asList("uno"));
+                        put("two", Arrays.asList("dos"));
+                        put("three", Arrays.asList("tres"));
                     }}
             ),
     };
@@ -1219,14 +1230,15 @@ public class URLTest {
     @Test
     public void testCachedQueryPairs() throws MalformedURLException {
         URL url = URL.parse("http://example.com?one=uno&two=dos&three");
-        Map<String, String> expected = new HashMap<String, String>() {{
-            put("one", "uno");
-            put("two", "dos");
+        Map<String, Collection<String>> expected = new HashMap<String, Collection<String>>() {{
+            put("one", Arrays.asList("uno"));
+            put("two", Arrays.asList("dos"));
+            put("three", Collections.emptyList());
         }};
 
-        Map<String, String> first = url.getQueryPairs();
+        Map<String, Collection<String>> first = url.getQueryPairs();
         // Second time, it should come from a cached value
-        Map<String, String> second = url.getQueryPairs();
+        Map<String, Collection<String>> second = url.getQueryPairs();
 
         // Test expected values
         Assert.assertEquals(expected, first);
@@ -1412,9 +1424,9 @@ public class URLTest {
 
     private class QueryStringTestCase {
         public String input;
-        public Map<String, String> expected;
+        public Map<String, Collection<String>> expected;
 
-        public QueryStringTestCase(String input, Map<String, String> expected) {
+        public QueryStringTestCase(String input, Map<String, Collection<String>> expected) {
             this.input = input;
             this.expected = expected;
         }

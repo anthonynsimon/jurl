@@ -6,8 +6,7 @@ import com.anthonynsimon.url.exceptions.MalformedURLException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * URL is a reference to a web resource. This class implements functionality for parsing and
@@ -44,7 +43,7 @@ public final class URL implements Serializable {
      * Cached parsed query string key-value pairs.
      * Do not serialize.
      */
-    private transient Map<String, String> parsedQueryPairs;
+    private transient Map<String, Collection<String>> parsedQueryPairs;
 
     /**
      * Cached string representation of the URL.
@@ -177,18 +176,22 @@ public final class URL implements Serializable {
     /**
      * Returns a map of key-value pairs from the parsed query string.
      */
-    public Map<String, String> getQueryPairs() {
+    public Map<String, Collection<String>> getQueryPairs() {
         if (parsedQueryPairs != null) {
             return parsedQueryPairs;
         }
         parsedQueryPairs = new HashMap<>();
 
-        if (!nullOrEmpty(query)) {
+        if (!nullOrEmpty(query) && !query.equals("?")) {
             String[] pairs = query.split("&");
             for (String pair : pairs) {
                 String[] parts = pair.split("=");
-                if (parts.length == 2 && !parts[0].isEmpty()) {
-                    parsedQueryPairs.put(parts[0], parts[1]);
+                if (parts.length > 0 && !parts[0].isEmpty()) {
+                    Collection<String> existing = parsedQueryPairs.getOrDefault(parts[0], new ArrayList<>());
+                    if (parts.length == 2) {
+                        existing.add(parts[1]);
+                    }
+                    parsedQueryPairs.put(parts[0], existing);
                 }
             }
         }
