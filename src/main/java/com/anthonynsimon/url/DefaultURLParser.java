@@ -36,11 +36,11 @@ final class DefaultURLParser implements URLParser {
 
         index = remaining.indexOf('?');
         if (index > 0) {
-            String qr = remaining.substring(index + 1, remaining.length());
-            if (!qr.isEmpty()) {
-                builder.setQuery(qr);
-            } else {
+            String query = remaining.substring(index + 1, remaining.length());
+            if (query.isEmpty()) {
                 builder.setQuery("?");
+            } else {
+                builder.setQuery(query);
             }
             remaining = remaining.substring(0, index);
         }
