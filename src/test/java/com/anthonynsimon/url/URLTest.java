@@ -1380,6 +1380,12 @@ public class URLTest {
         Assert.assertEquals(networkInterface.getHostname(), "0.0.0.0");
         Assert.assertTrue(networkInterface.getPort().equals(443));
         Assert.assertEquals(networkInterface.toString(), "0.0.0.0:443");
+
+        URL url = URL.parse("https://example.com:443");
+        Assert.assertTrue(url.toString().equals("https://example.com:443"));
+        Assert.assertEquals(url.getHost(), "example.com:443");
+        Assert.assertEquals(url.getHostname(), "example.com");
+        Assert.assertTrue(url.getPort() == 443);
     }
 
 
