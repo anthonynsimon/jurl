@@ -50,8 +50,8 @@ final class DefaultURLParser implements URLParser {
         boolean hasScheme = scheme != null && !scheme.isEmpty();
         builder.setScheme(scheme);
         remaining = parsedScheme.remaining;
-
-        if (hasScheme && remaining.charAt(0) != '/') {
+        
+        if (hasScheme && !remaining.startsWith("/")) {
             builder.setOpaque(remaining);
             return builder.build();
         }
@@ -108,6 +108,7 @@ final class DefaultURLParser implements URLParser {
 
         String scheme = remaining.substring(0, indexColon).toLowerCase();
         String rest = remaining.substring(indexColon + 1, remaining.length());
+        
         return new PartialParseResult(scheme, rest);
     }
 

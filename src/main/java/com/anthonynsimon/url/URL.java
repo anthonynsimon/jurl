@@ -33,6 +33,8 @@ public final class URL implements Serializable {
     private final String username;
     private final String password;
     private final String host;
+    private final String hostname;
+    private final Integer port;
     private final String path;
     private final String rawPath;
     private final String query;
@@ -60,6 +62,8 @@ public final class URL implements Serializable {
         this.username = mapToNullIfEmpty(username);
         this.password = mapToNullIfEmpty(password);
         this.host = mapToNullIfEmpty(host);
+        this.hostname = extractHostname(host);
+        this.port = extractPort(host);
         this.path = mapToNullIfEmpty(path);
         this.rawPath = null;
         this.query = mapToNullIfEmpty(query);
@@ -72,6 +76,8 @@ public final class URL implements Serializable {
         this.username = mapToNullIfEmpty(username);
         this.password = mapToNullIfEmpty(password);
         this.host = mapToNullIfEmpty(host);
+        this.hostname = extractHostname(host);
+        this.port = extractPort(host);
         this.path = mapToNullIfEmpty(path);
         this.rawPath = mapToNullIfEmpty(rawPath);
         this.query = mapToNullIfEmpty(query);
@@ -79,15 +85,26 @@ public final class URL implements Serializable {
         this.opaque = mapToNullIfEmpty(opaque);
     }
 
+    URL(String scheme, String username, String password, String hostname, Integer port, String path, String rawPath, String query, String fragment, String opaque) {
+        this.scheme = mapToNullIfEmpty(scheme);
+        this.username = mapToNullIfEmpty(username);
+        this.password = mapToNullIfEmpty(password);
+        this.host = mergeHostPortIfSet(hostname, port);
+        this.hostname = mapToNullIfEmpty(hostname);
+        this.port = port;
+        this.path = mapToNullIfEmpty(path);
+        this.rawPath = mapToNullIfEmpty(rawPath);
+        this.query = mapToNullIfEmpty(query);
+        this.fragment = mapToNullIfEmpty(fragment);
+        this.opaque = mapToNullIfEmpty(opaque);
+    }
+
+
     /**
      * Returns a new URL object after parsing the provided URL string.
      */
     public static URL parse(String url) throws MalformedURLException {
         return URL_PARSER.parse(url);
-    }
-
-    private String mapToNullIfEmpty(String str) {
-        return str != null && !str.isEmpty() ? str : null;
     }
 
     /**
@@ -116,6 +133,20 @@ public final class URL implements Serializable {
      */
     public String getHost() {
         return host;
+    }
+
+    /**
+     * Returns the hostname part of the host ('www.example.com' or '192.168.0.1' or '[fde2:d7de:302::]') if it exists.
+     */
+    public String getHostname() {
+        return hostname;
+    }
+
+    /**
+     * Returns the port part of the host (i.e. 80 or 443 or 3000) if it exists.
+     */
+    public Integer getPort() {
+        return port;
     }
 
     /**
@@ -222,16 +253,19 @@ public final class URL implements Serializable {
             return stringRepresentation;
         }
 
+        boolean hasScheme = !nullOrEmpty(scheme);
         StringBuffer sb = new StringBuffer();
-        if (!nullOrEmpty(scheme)) {
+        if (hasScheme) {
             sb.append(scheme);
             sb.append(":");
         }
         if (!nullOrEmpty(opaque)) {
             sb.append(opaque);
         } else {
-            if (!nullOrEmpty(scheme) || !nullOrEmpty(host)) {
-                sb.append("//");
+            if (hasScheme || !nullOrEmpty(host)) {
+                if (hasScheme) {
+                    sb.append("//");
+                }
                 if (!nullOrEmpty(username)) {
                     sb.append(PercentEncoder.encode(username, URLPart.CREDENTIALS));
                     if (!nullOrEmpty(password)) {
@@ -351,4 +385,62 @@ public final class URL implements Serializable {
                 .build();
     }
 
+
+    private static String mapToNullIfEmpty(String str) {
+        return str != null && !str.isEmpty() ? str : null;
+    }
+
+    /**
+     * Returns the full host (hostname:port), maps to null if none are set.
+     */
+    private static String mergeHostPortIfSet(String hostname, Integer port) {
+        StringBuilder sb = new StringBuilder();
+        boolean exists = false;
+        if (hostname != null) {
+            sb.append(hostname);
+            exists = true;
+        }
+        if (port != null) {
+            sb.append(":");
+            sb.append(port);
+            exists = true;
+        }
+        if (exists) {
+            return sb.toString();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the hostname part of the host ('www.example.com' or '192.168.0.1' or '[fde2:d7de:302::]') if it exists.
+     */
+    private static String extractHostname(String host) {
+        if (host != null) {
+            int separator = host.lastIndexOf(":");
+            if (separator > -1) {
+                return host.substring(0, separator);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the port part of the host (i.e. 8080 or 443 or 3000) if it exists.
+     */
+    private static Integer extractPort(String host) {
+        if (host != null) {
+            int separator = host.lastIndexOf(":");
+            if (separator > -1) {
+                String part = host.substring(separator, host.length());
+                if (part != null && part != "") {
+                    try {
+                        return Integer.parseInt(part);
+                    } catch (NumberFormatException exception) {
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }
