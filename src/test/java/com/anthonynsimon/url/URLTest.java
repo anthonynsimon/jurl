@@ -248,7 +248,7 @@ public class URLTest {
                     null,
                     null,
                     null,
-                    "//foo"
+                    "foo"
             ),
             // Leading // without scheme, with credentials and query
             new URLTestCase(
@@ -260,7 +260,7 @@ public class URLTest {
                     "/path",
                     "a=b",
                     null,
-                    "//user@foo/path?a=b"
+                    "user@foo/path?a=b"
             ),
             // Three leading slashes
             new URLTestCase(
@@ -1332,7 +1332,7 @@ public class URLTest {
 
     @Test(expected = MalformedURLException.class)
     public void testMissingScheme() throws Exception {
-        URL url = URL.parse(":http://www.domain.com/path");
+        URL url = URL.parse("://www.domain.com/path");
     }
 
 
@@ -1340,6 +1340,52 @@ public class URLTest {
     public void testRoundtrip() throws Exception {
         URL url = URL.parse("http://www.domain.com/?");
         Assert.assertEquals("http://www.domain.com/?", url.toString());
+    }
+
+
+    @Test
+    public void testSeparateHostnameAndPort() throws Exception {
+        URL simple = new URL("https", null, null, "localhost", null, "/", null, null, null, null);
+        Assert.assertTrue(simple.toString().equals("https://localhost/"));
+        Assert.assertEquals(simple.getHost(), "localhost");
+        Assert.assertEquals(simple.getHostname(), "localhost");
+        Assert.assertEquals(simple.getPort(), null);
+
+        URL withPort = new URL("https", null, null, "localhost", 8080, "/", null, null, null, null);
+        Assert.assertTrue(withPort.toString().equals("https://localhost:8080/"));
+        Assert.assertEquals(withPort.getHost(), "localhost:8080");
+        Assert.assertEquals(withPort.getHostname(), "localhost");
+        Assert.assertTrue(withPort.getPort().equals(8080));
+
+        URL withPortNoPath = new URL("https", null, null, "localhost", 8080, null, null, null, null, null);
+        Assert.assertTrue(withPortNoPath.toString().equals("https://localhost:8080"));
+        Assert.assertEquals(withPortNoPath.getHost(), "localhost:8080");
+        Assert.assertEquals(withPortNoPath.getHostname(), "localhost");
+        Assert.assertTrue(withPortNoPath.getPort().equals(8080));
+
+        URL noHostname = new URL("https", null, null, null, 8080, "/", null, null, null, null);
+        Assert.assertTrue(noHostname.toString().equals("https://:8080/"));
+        Assert.assertEquals(noHostname.getHost(), ":8080");
+        Assert.assertEquals(noHostname.getHostname(), null);
+        Assert.assertTrue(noHostname.getPort().equals(8080));
+
+        URL justPort = new URL(null, null, null, null, 3000, null, null, null, null, null);
+        Assert.assertEquals(justPort.getHost(), ":3000");
+        Assert.assertEquals(justPort.getHostname(), null);
+        Assert.assertTrue(justPort.getPort().equals(3000));
+        Assert.assertTrue(justPort.toString().equals(":3000"));
+
+        URL networkInterface = new URL(null, null, null, "0.0.0.0", 443, null, null, null, null, null);
+        Assert.assertEquals(networkInterface.getHost(), "0.0.0.0:443");
+        Assert.assertEquals(networkInterface.getHostname(), "0.0.0.0");
+        Assert.assertTrue(networkInterface.getPort().equals(443));
+        Assert.assertEquals(networkInterface.toString(), "0.0.0.0:443");
+    }
+
+
+    @Test(expected = MalformedURLException.class)
+    public void testCantParsePort() throws Exception {
+        URL missingPort = URL.parse("http://localhost:");
     }
 
     @Test
