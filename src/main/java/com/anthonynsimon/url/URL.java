@@ -431,7 +431,7 @@ public final class URL implements Serializable {
         if (host != null) {
             int separator = host.lastIndexOf(":");
             if (separator > -1) {
-                String part = host.substring(separator, host.length());
+                String part = host.substring(separator + 1, host.length());
                 if (part != null && part != "") {
                     try {
                         return Integer.parseInt(part);
