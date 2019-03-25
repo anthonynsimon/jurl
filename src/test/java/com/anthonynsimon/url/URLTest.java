@@ -1386,6 +1386,14 @@ public class URLTest {
         Assert.assertEquals(url.getHost(), "example.com:443");
         Assert.assertEquals(url.getHostname(), "example.com");
         Assert.assertTrue(url.getPort() == 443);
+
+
+        URL url2 = URL.parse("https://example.com/path");
+        Assert.assertTrue(url2.toString().equals("https://example.com/path"));
+        Assert.assertEquals(url2.getHost(), "example.com");
+        Assert.assertEquals(url2.getHostname(), "example.com");
+        Assert.assertEquals(url2.getPath(), "/path");
+        Assert.assertTrue(url2.getPort() == null);
     }
 
 

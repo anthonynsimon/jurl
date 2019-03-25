@@ -420,6 +420,7 @@ public final class URL implements Serializable {
             if (separator > -1) {
                 return host.substring(0, separator);
             }
+            return host;
         }
         return null;
     }
