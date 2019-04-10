@@ -104,6 +104,23 @@ final class PathResolver {
                 break;
         }
 
-        return "/" + String.join("/", result);
+        return "/" + join("/", result);
+    }
+
+    private static String join(CharSequence delimiter, List<String> tokens)
+    {
+        int length = tokens.size();
+        if (length == 0) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(tokens.get(0));
+        for (int i = 1; i < length; i++) {
+            sb.append(delimiter);
+            sb.append(tokens.get(i));
+        }
+
+        return sb.toString();
     }
 }

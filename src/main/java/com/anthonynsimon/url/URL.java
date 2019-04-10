@@ -218,7 +218,10 @@ public final class URL implements Serializable {
             for (String pair : pairs) {
                 String[] parts = pair.split("=");
                 if (parts.length > 0 && !parts[0].isEmpty()) {
-                    Collection<String> existing = parsedQueryPairs.getOrDefault(parts[0], new ArrayList<>());
+                    Collection<String> existing = parsedQueryPairs.get(parts[0]);
+                    if (existing == null) {
+                        existing = new ArrayList<>();
+                    }
                     if (parts.length == 2) {
                         existing.add(parts[1]);
                     }
