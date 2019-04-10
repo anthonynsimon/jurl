@@ -3,7 +3,7 @@ package com.anthonynsimon.url;
 /**
  * URLPart is used to distinguish between the parts of the url when encoding/decoding.
  */
-enum URLPart {
+public enum URLPart {
     CREDENTIALS,
     HOST,
     PATH,

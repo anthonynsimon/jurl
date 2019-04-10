@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * PathResolver is a utility class that resolves a reference path against a base path.
  */
-final class PathResolver {
+public final class PathResolver {
 
     /**
      * Disallow instantiation of class.

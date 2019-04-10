@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
  * <p>
  * Supports UTF-8 escaping and unescaping.
  */
-final class PercentEncoder {
+public final class PercentEncoder {
 
     /**
      * Reserved characters, allowed in certain parts of the URL. Must be escaped in most cases.
